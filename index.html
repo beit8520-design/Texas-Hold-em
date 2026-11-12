@@ -11,279 +11,280 @@
       font-family: 'Noto Sans TC', sans-serif;
       background-color: #09090b;
       color: #f4f4f5;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       user-select: none;
     }
-    .neon-text-pink { text-shadow: 0 0 8px rgba(236, 72, 153, 0.8), 0 0 20px rgba(236, 72, 153, 0.4); }
-    .neon-text-cyan { text-shadow: 0 0 8px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4); }
-    .neon-border { box-shadow: 0 0 15px rgba(236, 72, 153, 0.3), inset 0 0 10px rgba(34, 211, 238, 0.2); }
-    .card-shadow { box-shadow: 0 6px 14px rgba(0, 0, 0, 0.75); }
+    .neon-text-pink { text-shadow: 0 0 10px rgba(236, 72, 153, 0.85), 0 0 24px rgba(236, 72, 153, 0.45); }
+    .neon-text-cyan { text-shadow: 0 0 10px rgba(34, 211, 238, 0.85), 0 0 24px rgba(34, 211, 238, 0.45); }
+    .neon-border { box-shadow: 0 0 18px rgba(236, 72, 153, 0.35), inset 0 0 12px rgba(34, 211, 238, 0.25); }
+    .card-shadow { box-shadow: 0 8px 18px rgba(0, 0, 0, 0.85); }
     .sprite-blend {
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.85));
-      border-radius: 12px;
+      filter: drop-shadow(0 12px 22px rgba(0,0,0,0.9));
+      border-radius: 14px;
     }
     .felt-bg {
       background-image: url('assets/06_table_felt_tier1.jpg'), radial-gradient(circle at center, #15803d 0%, #052e16 100%);
       background-size: cover;
       background-position: center;
     }
-    @keyframes pulseFast {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-    .animate-pulse-fast { animation: pulseFast 1.2s infinite; }
   </style>
 </head>
-<body class="w-screen h-screen flex flex-col justify-between relative">
+<body class="min-h-screen w-screen flex flex-col justify-between relative">
 
-  <!-- 頂部狀態欄 (HUD) -->
-  <header class="w-full h-14 bg-zinc-950/90 border-b border-zinc-800 px-6 flex items-center justify-between z-30 backdrop-blur-md">
-    <div class="flex items-center space-x-6">
-      <div class="text-lg font-black tracking-wider text-pink-500 neon-text-pink">
-        DAY <span id="hud-day">1</span> <span class="text-xs text-zinc-400 font-normal ml-1" id="hud-phase">序章：血色借據</span>
+  <!-- 頂部狀態欄 (HUD) — 放大字體與間距 -->
+  <header class="w-full min-h-[4.25rem] bg-zinc-950/95 border-b border-zinc-800 px-6 py-2.5 flex flex-wrap items-center justify-between gap-4 z-30 backdrop-blur-md">
+    <div class="flex flex-wrap items-center gap-5">
+      <div class="text-xl md:text-2xl font-black tracking-wider text-pink-500 neon-text-pink">
+        DAY <span id="hud-day">1</span>
+        <span class="text-sm md:text-base text-zinc-300 font-bold ml-2" id="hud-phase">序章：血色借據</span>
       </div>
-      <div class="h-5 w-[1px] bg-zinc-700"></div>
+      <div class="h-6 w-[1px] bg-zinc-700 hidden md:block"></div>
       <div class="flex items-center space-x-2">
-        <span class="text-xs text-zinc-400">持有資金</span>
-        <span class="text-lg font-bold text-emerald-400 font-mono" id="hud-money">$1,000</span>
+        <span class="text-sm text-zinc-400 font-bold">持有資金</span>
+        <span class="text-xl md:text-2xl font-black text-emerald-400 font-mono" id="hud-money">$1,000</span>
       </div>
       <div class="flex items-center space-x-2">
-        <span class="text-xs text-zinc-400">下期還款目標</span>
-        <span class="text-sm font-bold text-amber-400 font-mono" id="hud-debt">$20,000 (Day 3)</span>
+        <span class="text-sm text-zinc-400 font-bold">還款目標</span>
+        <span class="text-base md:text-lg font-extrabold text-amber-400 font-mono" id="hud-debt">$20,000 (Day 3)</span>
       </div>
     </div>
 
-    <div class="flex items-center space-x-5">
+    <div class="flex flex-wrap items-center gap-5">
       <div class="flex items-center space-x-2">
-        <span class="text-xs text-zinc-400">壓力 SAN</span>
-        <div class="w-24 h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+        <span class="text-sm text-zinc-300 font-bold">壓力 SAN</span>
+        <div class="w-28 h-3.5 bg-zinc-800 rounded-full overflow-hidden">
           <div id="hud-san-bar" class="h-full bg-purple-500 transition-all duration-300" style="width: 30%;"></div>
         </div>
-        <span class="text-xs font-mono text-purple-300" id="hud-san">30</span>
+        <span class="text-sm md:text-base font-mono font-bold text-purple-300" id="hud-san">30</span>
       </div>
 
       <div class="flex items-center space-x-2">
-        <span class="text-xs text-zinc-400">專注力</span>
-        <span class="text-sm font-bold text-cyan-400 font-mono" id="hud-focus">50</span>
+        <span class="text-sm text-zinc-300 font-bold">專注力</span>
+        <span class="text-base md:text-lg font-black text-cyan-400 font-mono" id="hud-focus">50</span>
       </div>
 
       <div class="flex items-center space-x-2">
-        <span class="text-xs text-red-400 font-bold">警戒值</span>
-        <div class="w-24 h-2.5 bg-zinc-800 rounded-full overflow-hidden border border-red-900/50">
+        <span class="text-sm text-red-400 font-black">警戒值</span>
+        <div class="w-28 h-3.5 bg-zinc-800 rounded-full overflow-hidden border border-red-900/50">
           <div id="hud-suspicion-bar" class="h-full bg-red-600 transition-all duration-300" style="width: 0%;"></div>
         </div>
-        <span class="text-xs font-mono text-red-400" id="hud-suspicion">0%</span>
+        <span class="text-sm md:text-base font-mono font-black text-red-400" id="hud-suspicion">0%</span>
       </div>
 
-      <button onclick="Game.saveGame()" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-xs rounded border border-zinc-600 transition">
+      <button onclick="Game.saveGame()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-sm font-bold rounded-lg border border-zinc-600 transition">
         手動存檔
       </button>
     </div>
   </header>
 
   <!-- 主舞台容器 -->
-  <main id="stage" class="relative flex-1 w-full h-full overflow-hidden flex items-center justify-center">
+  <main id="stage" class="relative flex-1 w-full flex items-center justify-center">
     <!-- 背景圖層 -->
-    <div id="bg-layer" class="absolute inset-0 bg-cover bg-center transition-all duration-700" style="background-image: url('assets/01_bg_casino_1_dock.jpg');"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-zinc-950/60"></div>
+    <div id="bg-layer" class="fixed inset-0 bg-cover bg-center transition-all duration-700 -z-10" style="background-image: url('assets/01_bg_casino_1_dock.jpg');"></div>
+    <div class="fixed inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/35 to-zinc-950/55 -z-10"></div>
 
     <!-- 畫面 0：標題畫面 -->
-    <section id="screen-title" class="relative z-20 flex flex-col items-center text-center p-8 max-w-2xl">
-      <div class="text-xs tracking-[0.4em] text-cyan-400 uppercase mb-2">KOWLOON BAY NOIR POKER</div>
-      <h1 class="text-5xl md:text-6xl font-black tracking-tight text-white mb-4 neon-text-pink">九龍灣：血色籌碼</h1>
-      <p class="text-zinc-300 text-sm md:text-base mb-8 leading-relaxed">
+    <section id="screen-title" class="relative z-20 flex flex-col items-center text-center p-10 max-w-3xl">
+      <div class="text-base md:text-lg tracking-[0.45em] text-cyan-400 font-bold uppercase mb-3">KOWLOON BAY NOIR POKER</div>
+      <h1 class="text-5xl md:text-7xl font-black tracking-tight text-white mb-6 neon-text-pink">九龍灣：血色籌碼</h1>
+      <p class="text-zinc-200 text-lg md:text-xl mb-10 leading-relaxed">
         背負一千萬高利貸的 21 天生死倒數。<br>
         在暗潮洶湧的地下賭場裡，算牌只是基本功——看穿微表情、識破對手牌風與出千道具，從獵物變成莊家。
       </p>
-      <div class="flex space-x-4">
-        <button onclick="Game.startNewGame()" class="px-8 py-3.5 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-lg shadow-lg shadow-pink-600/30 transition transform hover:scale-105">
+      <div class="flex flex-wrap justify-center gap-5">
+        <button onclick="Game.startNewGame()" class="px-10 py-4 bg-pink-600 hover:bg-pink-500 text-white text-xl font-black rounded-xl shadow-lg shadow-pink-600/40 transition transform hover:scale-105">
           開始新遊戲（序章）
         </button>
-        <button id="btn-load" onclick="Game.loadGame()" class="px-8 py-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold rounded-lg border border-zinc-600 transition hidden">
+        <button id="btn-load" onclick="Game.loadGame()" class="px-10 py-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xl font-bold rounded-xl border border-zinc-500 transition hidden">
           讀取存檔
         </button>
       </div>
     </section>
 
-    <!-- 畫面 1：視覺小說劇情模式 (VN Mode) -->
-    <section id="screen-vn" class="hidden relative z-20 w-full h-full flex flex-col justify-end">
-      <div class="flex-1 w-full max-w-6xl mx-auto flex items-end justify-between px-8 pt-6 pointer-events-none">
-        <div class="w-72 md:w-80 h-[440px] flex items-end justify-center transition-all duration-300" id="vn-left-wrap">
-          <img id="vn-sprite-left" src="" alt="" class="max-h-full object-contain sprite-blend hidden" onerror="this.style.display='none'" />
+    <!-- 畫面 1：視覺小說劇情模式 (VN Mode) — 立繪與對話框最大化 -->
+    <section id="screen-vn" class="hidden relative z-20 w-full min-h-[calc(100vh-4.25rem)] flex flex-col justify-end">
+      <div class="flex-1 w-full max-w-7xl mx-auto flex items-end justify-between px-4 md:px-10 pt-4 pointer-events-none">
+        <div class="w-[46%] max-w-[440px] h-[52vh] md:h-[60vh] flex items-end justify-center transition-all duration-300" id="vn-left-wrap">
+          <img id="vn-sprite-left" src="" alt="" class="max-h-full w-auto object-contain sprite-blend hidden" onerror="this.style.display='none'" />
         </div>
-        <div class="w-72 md:w-80 h-[440px] flex items-end justify-center transition-all duration-300" id="vn-right-wrap">
-          <img id="vn-sprite-right" src="" alt="" class="max-h-full object-contain sprite-blend hidden" onerror="this.style.display='none'" />
+        <div class="w-[46%] max-w-[440px] h-[52vh] md:h-[60vh] flex items-end justify-center transition-all duration-300" id="vn-right-wrap">
+          <img id="vn-sprite-right" src="" alt="" class="max-h-full w-auto object-contain sprite-blend hidden" onerror="this.style.display='none'" />
         </div>
       </div>
 
-      <div id="vn-choices" class="hidden absolute inset-0 bg-zinc-950/75 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 space-y-4">
-        <div class="text-cyan-400 text-sm tracking-widest uppercase mb-2">做出你的抉擇</div>
-        <div id="vn-choices-list" class="w-full max-w-2xl flex flex-col space-y-3"></div>
+      <!-- 分歧選項浮層 -->
+      <div id="vn-choices" class="hidden fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 space-y-5">
+        <div class="text-cyan-400 text-lg font-bold tracking-widest uppercase mb-2">做出你的抉擇</div>
+        <div id="vn-choices-list" class="w-full max-w-3xl flex flex-col space-y-4"></div>
       </div>
 
-      <div onclick="VN.next()" class="relative z-20 w-full max-w-5xl mx-auto mb-6 bg-zinc-950/95 border border-zinc-700/80 rounded-xl p-6 cursor-pointer neon-border hover:border-pink-500/60 transition">
-        <div class="flex items-center justify-between mb-2">
-          <span id="vn-speaker" class="px-3 py-0.5 bg-pink-600/20 border border-pink-500/50 text-pink-400 font-bold text-sm rounded">系統</span>
-          <span class="text-xs text-zinc-500 animate-pulse">點擊對話框繼續 ▼</span>
+      <!-- 底部對話框 -->
+      <div onclick="VN.next()" class="relative z-20 w-full max-w-6xl mx-auto mb-6 bg-zinc-950/95 border-2 border-zinc-700/90 rounded-2xl p-7 md:p-8 cursor-pointer neon-border hover:border-pink-500/80 transition">
+        <div class="flex items-center justify-between mb-3">
+          <span id="vn-speaker" class="px-4 py-1 bg-pink-600/25 border border-pink-500/60 text-pink-300 font-black text-lg md:text-xl rounded-lg">系統</span>
+          <span class="text-sm md:text-base text-zinc-400 font-bold animate-pulse">點擊對話框繼續 ▼</span>
         </div>
-        <p id="vn-text" class="text-zinc-100 text-base md:text-lg leading-relaxed min-h-[3.5rem]"></p>
+        <p id="vn-text" class="text-white text-xl md:text-2xl leading-relaxed tracking-wide min-h-[4.5rem]"></p>
       </div>
     </section>
 
     <!-- 畫面 2：白天行動整備階段 (Day Hub) -->
-    <section id="screen-hub" class="hidden relative z-20 w-full max-w-5xl mx-auto p-6">
-      <div class="bg-zinc-950/90 border border-zinc-800 rounded-2xl p-8 backdrop-blur-md shadow-2xl">
-        <div class="flex justify-between items-start border-b border-zinc-800 pb-4 mb-6">
+    <section id="screen-hub" class="hidden relative z-20 w-full max-w-6xl mx-auto p-6">
+      <div class="bg-zinc-950/95 border border-zinc-800 rounded-2xl p-8 md:p-10 backdrop-blur-md shadow-2xl">
+        <div class="flex flex-wrap justify-between items-start border-b border-zinc-800 pb-5 mb-7 gap-4">
           <div>
-            <h2 class="text-2xl font-black text-white" id="hub-title">Day 2 清晨 — 出租套房</h2>
-            <p class="text-sm text-zinc-400 mt-1" id="hub-desc">距離第一次討債還款還有 1 天。選擇你白天的行動（每天可執行 1 次白天行動，隨後進入夜晚牌局）。</p>
+            <h2 class="text-3xl font-black text-white" id="hub-title">Day 2 清晨 — 出租套房</h2>
+            <p class="text-base md:text-lg text-zinc-300 mt-2" id="hub-desc">距離第一次討債還款還有 1 天。選擇你白天的行動（每天可執行 1 次白天行動，隨後進入夜晚牌局）。</p>
           </div>
-          <div class="text-right">
-            <div class="text-xs text-zinc-400">持有道具</div>
-            <div class="text-sm font-bold text-cyan-300 mt-1" id="hub-inventory">無</div>
+          <div class="text-right bg-zinc-900 px-5 py-3 rounded-xl border border-zinc-700">
+            <div class="text-sm text-zinc-400 font-bold">持有出千道具</div>
+            <div class="text-base md:text-lg font-black text-cyan-300 mt-1" id="hub-inventory">無</div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div class="bg-zinc-900/90 border border-zinc-700 rounded-xl p-5 flex flex-col justify-between hover:border-cyan-500 transition">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-zinc-900/95 border border-zinc-700 rounded-2xl p-6 flex flex-col justify-between hover:border-cyan-500 transition">
             <div>
-              <div class="text-cyan-400 font-bold text-lg mb-1">前往後巷黑市</div>
-              <p class="text-xs text-zinc-400 mb-4">向情報販子「阿鬼」購買出千道具，在牌桌上扭轉劣勢。</p>
-              <div class="space-y-2 text-xs">
-                <button onclick="Hub.buyItem('eyedrops', 1500)" class="w-full py-2 px-3 bg-zinc-800 hover:bg-cyan-950 border border-zinc-600 hover:border-cyan-500 rounded flex justify-between items-center">
-                  <span>透視眼藥水 (偷看對手1張牌)</span>
+              <div class="text-cyan-400 font-black text-xl mb-2">前往後巷黑市</div>
+              <p class="text-sm md:text-base text-zinc-300 mb-5">向情報販子「阿鬼」購買出千道具，在牌桌上扭轉劣勢。</p>
+              <div class="space-y-3 text-sm md:text-base">
+                <button onclick="Hub.buyItem('eyedrops', 1500)" class="w-full py-3 px-4 bg-zinc-800 hover:bg-cyan-950 border border-zinc-600 hover:border-cyan-500 rounded-xl flex justify-between items-center font-bold">
+                  <span>透視眼藥水 (偷看1張牌)</span>
                   <span class="text-emerald-400 font-mono">$1,500</span>
                 </button>
-                <button onclick="Hub.buyItem('marked_deck', 2000)" class="w-full py-2 px-3 bg-zinc-800 hover:bg-cyan-950 border border-zinc-600 hover:border-cyan-500 rounded flex justify-between items-center">
-                  <span>藥水標記牌 (將底牌換成AA)</span>
+                <button onclick="Hub.buyItem('marked_deck', 2000)" class="w-full py-3 px-4 bg-zinc-800 hover:bg-cyan-950 border border-zinc-600 hover:border-cyan-500 rounded-xl flex justify-between items-center font-bold">
+                  <span>藥水標記牌 (換成AA)</span>
                   <span class="text-emerald-400 font-mono">$2,000</span>
                 </button>
               </div>
             </div>
-            <div class="text-[11px] text-zinc-500 mt-3">* 購買道具不消耗白天行動次數</div>
+            <div class="text-xs md:text-sm text-zinc-400 mt-4">* 購買道具不消耗白天行動次數</div>
           </div>
 
-          <div class="bg-zinc-900/90 border border-zinc-700 rounded-xl p-5 flex flex-col justify-between hover:border-purple-500 transition">
+          <div class="bg-zinc-900/95 border border-zinc-700 rounded-2xl p-6 flex flex-col justify-between hover:border-purple-500 transition">
             <div>
-              <div class="text-purple-400 font-bold text-lg mb-1">拉上窗簾補眠</div>
-              <p class="text-xs text-zinc-400 mb-4">遠離催債電話，平復緊繃的神經，為今晚的心理戰做準備。</p>
-              <ul class="text-xs text-zinc-300 space-y-1">
+              <div class="text-purple-400 font-black text-xl mb-2">拉上窗簾補眠</div>
+              <p class="text-sm md:text-base text-zinc-300 mb-5">遠離催債電話，平復緊繃的神經，為今晚的心理戰做準備。</p>
+              <ul class="text-base text-zinc-200 space-y-2 font-bold">
                 <li>• 壓力值 SAN <span class="text-emerald-400">-20</span></li>
                 <li>• 專注力 <span class="text-cyan-400">+25</span></li>
                 <li>• 賭場警戒值 <span class="text-emerald-400">-15%</span></li>
               </ul>
             </div>
-            <button onclick="Hub.doAction('rest')" class="mt-4 w-full py-2.5 bg-purple-700 hover:bg-purple-600 text-white font-bold text-sm rounded-lg transition">
+            <button onclick="Hub.doAction('rest')" class="mt-6 w-full py-3.5 bg-purple-700 hover:bg-purple-600 text-white font-black text-base rounded-xl transition">
               執行休息（進入夜晚）
             </button>
           </div>
 
-          <div class="bg-zinc-900/90 border border-zinc-700 rounded-xl p-5 flex flex-col justify-between hover:border-amber-500 transition">
+          <div class="bg-zinc-900/95 border border-zinc-700 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-500 transition">
             <div>
-              <div class="text-amber-400 font-bold text-lg mb-1">分析地下盤口數據</div>
-              <p class="text-xs text-zinc-400 mb-4">運用前金融分析師的專業，幫地下外圍整理賠率表賺取外快。</p>
-              <ul class="text-xs text-zinc-300 space-y-1">
+              <div class="text-amber-400 font-black text-xl mb-2">分析地下盤口數據</div>
+              <p class="text-sm md:text-base text-zinc-300 mb-5">運用前金融分析師的專業，幫地下外圍整理賠率表賺取外快。</p>
+              <ul class="text-base text-zinc-200 space-y-2 font-bold">
                 <li>• 獲得現金 <span class="text-emerald-400">+$3,000</span></li>
                 <li>• 壓力值 SAN <span class="text-red-400">+10</span></li>
               </ul>
             </div>
-            <button onclick="Hub.doAction('work')" class="mt-4 w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm rounded-lg transition">
+            <button onclick="Hub.doAction('work')" class="mt-6 w-full py-3.5 bg-amber-600 hover:bg-amber-500 text-white font-black text-base rounded-xl transition">
               接案算盤（進入夜晚）
             </button>
           </div>
         </div>
 
         <div class="flex justify-end">
-          <button onclick="Hub.goNightPoker()" class="px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl shadow-lg shadow-pink-600/30 transition">
+          <button onclick="Hub.goNightPoker()" class="px-8 py-4 bg-pink-600 hover:bg-pink-500 text-white text-lg font-black rounded-xl shadow-lg shadow-pink-600/30 transition">
             直接前往今晚的牌局 →
           </button>
         </div>
       </div>
     </section>
 
-    <!-- 畫面 3：德州撲克核心牌桌 (Poker Table) -->
-    <section id="screen-poker" class="hidden relative z-20 w-full h-full flex flex-col justify-between p-4">
-      <div class="w-full max-w-6xl mx-auto flex justify-between items-center bg-zinc-950/80 px-5 py-2 rounded-xl border border-zinc-800">
-        <div class="flex items-center space-x-4">
-          <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded text-xs font-bold" id="pk-venue">廢棄碼頭倉庫</span>
-          <span class="text-xs text-zinc-300">盲注：<strong class="text-white font-mono" id="pk-blinds">$10 / $20</strong></span>
-          <span class="text-xs text-zinc-300">本晚局數：<strong class="text-cyan-400 font-mono" id="pk-hand-count">1 / 5</strong></span>
+    <!-- 畫面 3：德州撲克核心牌桌 (Poker Table) — 撲克牌與頭像全尺寸放大 -->
+    <section id="screen-poker" class="hidden relative z-20 w-full min-h-[calc(100vh-4.25rem)] flex flex-col justify-between p-4 md:p-6 gap-3">
+      <!-- 牌桌資訊列 -->
+      <div class="w-full max-w-7xl mx-auto flex flex-wrap justify-between items-center bg-zinc-950/90 px-6 py-3 rounded-xl border border-zinc-800 gap-3">
+        <div class="flex flex-wrap items-center gap-5">
+          <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-lg text-sm md:text-base font-black" id="pk-venue">廢棄碼頭倉庫</span>
+          <span class="text-sm md:text-base text-zinc-200">盲注：<strong class="text-white font-mono text-lg" id="pk-blinds">$10 / $20</strong></span>
+          <span class="text-sm md:text-base text-zinc-200">本晚局數：<strong class="text-cyan-400 font-mono text-lg" id="pk-hand-count">1 / 5</strong></span>
         </div>
-        <div id="pk-tell-hint" class="text-xs text-pink-300 italic">
+        <div id="pk-tell-hint" class="text-sm md:text-base text-pink-300 font-bold">
           觀察對手表情變化與牌風，尋找破綻...
         </div>
       </div>
 
-      <div class="relative w-full max-w-5xl h-[430px] mx-auto my-auto felt-bg rounded-[180px] border-[10px] border-zinc-900 shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col items-center justify-between py-6 px-12">
+      <!-- 橢圓賭桌主體 -->
+      <div class="relative w-full max-w-6xl min-h-[540px] mx-auto my-auto felt-bg rounded-[140px] md:rounded-[220px] border-[12px] border-zinc-900 shadow-[0_0_60px_rgba(0,0,0,0.95)] flex flex-col items-center justify-between py-6 px-6 md:px-14 gap-4">
         
         <!-- 對手資訊區 -->
-        <div class="flex items-center space-x-4 bg-zinc-950/90 border border-zinc-700 px-5 py-2.5 rounded-2xl shadow-xl">
-          <img id="pk-opp-avatar" src="assets/12_char_scar_1.png" class="w-16 h-16 rounded-full object-cover object-top border-2 border-pink-500 bg-zinc-800" onerror="this.src='https://placehold.co/100x100/18181b/f43f5e?text=OPP'" />
+        <div class="flex flex-wrap items-center justify-center gap-5 bg-zinc-950/95 border-2 border-zinc-700 px-6 py-3.5 rounded-2xl shadow-2xl">
+          <img id="pk-opp-avatar" src="assets/12_char_scar_1.png" class="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover object-top border-3 border-pink-500 bg-zinc-800 shadow-lg" onerror="this.src='https://placehold.co/120x120/18181b/f43f5e?text=OPP'" />
           <div>
-            <div class="flex items-center space-x-2">
-              <span class="font-bold text-white text-base" id="pk-opp-name">討債打手「刀疤」</span>
-              <span class="text-[11px] px-2 py-0.5 bg-zinc-800 text-amber-300 border border-amber-500/30 rounded" id="pk-opp-style">直覺進攻型</span>
+            <div class="flex flex-wrap items-center gap-2.5">
+              <span class="font-black text-white text-xl md:text-2xl" id="pk-opp-name">討債打手「刀疤」</span>
+              <span class="text-xs md:text-sm px-2.5 py-0.5 bg-zinc-800 text-amber-300 border border-amber-500/40 rounded-lg font-bold" id="pk-opp-style">直覺進攻型</span>
             </div>
-            <div class="text-sm font-mono text-amber-400 font-bold" id="pk-opp-chips">$5,000</div>
-            <div class="text-xs text-cyan-300 mt-0.5" id="pk-opp-action">等待發牌...</div>
+            <div class="text-lg md:text-xl font-mono text-amber-400 font-black mt-1" id="pk-opp-chips">$5,000</div>
+            <div class="text-sm md:text-base text-cyan-300 font-bold mt-1" id="pk-opp-action">等待發牌...</div>
           </div>
-          <div class="flex space-x-1.5 pl-3" id="pk-opp-cards"></div>
+          <div class="flex space-x-2.5 pl-2" id="pk-opp-cards"></div>
         </div>
 
         <!-- 中央公共牌與底池 -->
-        <div class="flex flex-col items-center my-2">
-          <div class="px-5 py-1 bg-zinc-950/85 border border-amber-500/40 rounded-full text-amber-400 font-mono font-bold text-base mb-3 shadow">
+        <div class="flex flex-col items-center my-1">
+          <div class="px-7 py-1.5 bg-zinc-950/90 border-2 border-amber-500/50 rounded-full text-amber-400 font-mono font-black text-xl md:text-2xl mb-3 shadow-lg">
             底池 POT: <span id="pk-pot">$0</span>
           </div>
-          <div class="flex space-x-2.5 h-24 items-center" id="pk-community-cards"></div>
-          <div id="pk-message" class="mt-2 text-sm font-bold text-white bg-zinc-950/80 px-4 py-1 rounded-full">
+          <div class="flex space-x-3 md:space-x-4 min-h-[7.5rem] items-center" id="pk-community-cards"></div>
+          <div id="pk-message" class="mt-3 text-base md:text-lg font-black text-white bg-zinc-950/90 border border-zinc-700 px-6 py-1.5 rounded-full shadow">
             準備開始牌局
           </div>
         </div>
 
         <!-- 玩家手牌與狀態 -->
-        <div class="flex items-center space-x-6">
-          <div class="flex space-x-2" id="pk-player-cards"></div>
-          <div class="bg-zinc-950/90 border border-emerald-500/40 px-4 py-2 rounded-xl">
-            <div class="text-xs text-zinc-400">你的牌桌籌碼</div>
-            <div class="text-lg font-mono font-black text-emerald-400" id="pk-player-chips">$1,000</div>
-            <div class="text-xs text-cyan-300 font-bold mt-0.5" id="pk-player-rank">牌型計算中</div>
+        <div class="flex flex-wrap items-center justify-center gap-6">
+          <div class="flex space-x-3" id="pk-player-cards"></div>
+          <div class="bg-zinc-950/95 border-2 border-emerald-500/50 px-6 py-3 rounded-2xl shadow-xl">
+            <div class="text-sm text-zinc-400 font-bold">你的牌桌籌碼</div>
+            <div class="text-2xl md:text-3xl font-mono font-black text-emerald-400" id="pk-player-chips">$1,000</div>
+            <div class="text-sm md:text-base text-cyan-300 font-black mt-1" id="pk-player-rank">牌型計算中</div>
           </div>
         </div>
       </div>
 
       <!-- 底部操作控制列 -->
-      <div class="w-full max-w-6xl mx-auto bg-zinc-950/95 border border-zinc-800 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center space-x-2">
-          <span class="text-xs font-bold text-pink-400 mr-1">出千道具：</span>
-          <button id="btn-cheat-eyedrops" onclick="Poker.useCheat('eyedrops')" class="px-3 py-2 bg-zinc-900 hover:bg-cyan-950 border border-cyan-700/60 rounded-lg text-xs flex items-center space-x-1.5 disabled:opacity-40 transition">
+      <div class="w-full max-w-7xl mx-auto bg-zinc-950/95 border border-zinc-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="text-sm md:text-base font-black text-pink-400 mr-1">出千道具：</span>
+          <button id="btn-cheat-eyedrops" onclick="Poker.useCheat('eyedrops')" class="px-4 py-3 bg-zinc-900 hover:bg-cyan-950 border border-cyan-700/70 rounded-xl text-sm md:text-base font-bold flex items-center space-x-2 disabled:opacity-40 transition">
             <span>👁️ 透視眼藥水 (<span id="count-eyedrops">0</span>)</span>
           </button>
-          <button id="btn-cheat-marked" onclick="Poker.useCheat('marked_deck')" class="px-3 py-2 bg-zinc-900 hover:bg-pink-950 border border-pink-700/60 rounded-lg text-xs flex items-center space-x-1.5 disabled:opacity-40 transition">
+          <button id="btn-cheat-marked" onclick="Poker.useCheat('marked_deck')" class="px-4 py-3 bg-zinc-900 hover:bg-pink-950 border border-pink-700/70 rounded-xl text-sm md:text-base font-bold flex items-center space-x-2 disabled:opacity-40 transition">
             <span>🃏 藥水標記牌 (<span id="count-marked">0</span>)</span>
           </button>
         </div>
 
-        <div id="pk-controls" class="flex items-center space-x-2.5">
-          <button onclick="Poker.playerAction('fold')" class="px-5 py-2.5 bg-zinc-800 hover:bg-red-900/80 text-zinc-200 font-bold text-sm rounded-xl border border-zinc-600 transition">
+        <div id="pk-controls" class="flex flex-wrap items-center gap-3">
+          <button onclick="Poker.playerAction('fold')" class="px-6 py-3.5 bg-zinc-800 hover:bg-red-900/90 text-zinc-100 font-black text-base md:text-lg rounded-xl border border-zinc-600 transition">
             蓋牌 (Fold)
           </button>
-          <button id="btn-call" onclick="Poker.playerAction('call')" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition">
+          <button id="btn-call" onclick="Poker.playerAction('call')" class="px-6 py-3.5 bg-emerald-700 hover:bg-emerald-600 text-white font-black text-base md:text-lg rounded-xl transition">
             跟注 / 過牌
           </button>
-          <button id="btn-raise" onclick="Poker.playerAction('raise')" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm rounded-xl transition">
+          <button id="btn-raise" onclick="Poker.playerAction('raise')" class="px-6 py-3.5 bg-amber-600 hover:bg-amber-500 text-white font-black text-base md:text-lg rounded-xl transition">
             加注 (2x)
           </button>
-          <button onclick="Poker.playerAction('allin')" class="px-5 py-2.5 bg-pink-600 hover:bg-pink-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-600/30 transition">
+          <button onclick="Poker.playerAction('allin')" class="px-7 py-3.5 bg-pink-600 hover:bg-pink-500 text-white font-black text-base md:text-lg rounded-xl shadow-lg shadow-pink-600/40 transition">
             全下 (ALL-IN)
           </button>
         </div>
 
-        <div id="pk-next-wrap" class="hidden flex items-center space-x-3">
-          <button id="btn-next-hand" onclick="Poker.startNextHand()" class="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm rounded-xl transition">
+        <div id="pk-next-wrap" class="hidden flex items-center gap-4">
+          <button id="btn-next-hand" onclick="Poker.startNextHand()" class="px-7 py-3.5 bg-cyan-600 hover:bg-cyan-500 text-white font-black text-base md:text-lg rounded-xl transition">
             下一手牌 →
           </button>
-          <button id="btn-leave-table" onclick="Poker.finishNightSession()" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-sm rounded-xl border border-zinc-600 transition">
+          <button id="btn-leave-table" onclick="Poker.finishNightSession()" class="px-6 py-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-bold text-base md:text-lg rounded-xl border border-zinc-600 transition">
             結束今晚牌局
           </button>
         </div>
@@ -291,12 +292,12 @@
     </section>
 
     <!-- 畫面 4：章節結算 / 結局畫面 -->
-    <section id="screen-ending" class="hidden relative z-30 w-full max-w-3xl mx-auto bg-zinc-950/95 border border-zinc-700 rounded-2xl p-8 text-center shadow-2xl">
-      <img id="end-cg" src="" class="w-full h-64 object-cover rounded-xl mb-6 border border-zinc-800 hidden" />
-      <div class="text-xs tracking-widest uppercase text-pink-500 mb-2" id="end-tag">CHAPTER 1 CLEAR</div>
-      <h2 class="text-3xl font-black text-white mb-4" id="end-title">第一章通關：踏入霓虹迷局</h2>
-      <p class="text-zinc-300 text-sm leading-relaxed mb-8" id="end-desc"></p>
-      <button onclick="location.reload()" class="px-8 py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl transition">
+    <section id="screen-ending" class="hidden relative z-30 w-full max-w-4xl mx-auto bg-zinc-950/95 border border-zinc-700 rounded-2xl p-10 text-center shadow-2xl my-6">
+      <img id="end-cg" src="" class="w-full h-80 object-cover rounded-xl mb-6 border border-zinc-800 hidden" />
+      <div class="text-base tracking-widest uppercase text-pink-500 font-bold mb-2" id="end-tag">CHAPTER 1 CLEAR</div>
+      <h2 class="text-4xl font-black text-white mb-5" id="end-title">第一章通關：踏入霓虹迷局</h2>
+      <p class="text-zinc-200 text-lg leading-relaxed mb-8" id="end-desc"></p>
+      <button onclick="location.reload()" class="px-10 py-4 bg-pink-600 hover:bg-pink-500 text-white text-lg font-black rounded-xl transition">
         返回主標題 / 重新挑戰
       </button>
     </section>
@@ -546,7 +547,7 @@
         list.innerHTML = '';
         this.scene.choices.forEach(c => {
           const btn = document.createElement('button');
-          btn.className = 'w-full p-4 bg-zinc-900 hover:bg-pink-950/80 border border-zinc-700 hover:border-pink-500 rounded-xl text-left text-white font-bold transition shadow-lg';
+          btn.className = 'w-full p-5 bg-zinc-900 hover:bg-pink-950/90 border-2 border-zinc-700 hover:border-pink-500 rounded-2xl text-left text-white text-lg md:text-xl font-bold transition shadow-xl';
           btn.innerText = c.label;
           btn.onclick = () => {
             if (c.effect) c.effect();
@@ -600,7 +601,6 @@
       },
       goNightPoker() {
         document.getElementById('bg-layer').style.backgroundImage = `url('assets/01_bg_casino_1_dock.jpg')`;
-        // 具備明確強弱與牌風區隔的三位對手
         const opponents = [
           {
             name: '醉醺醺的上班族',
@@ -831,7 +831,6 @@
         const oppEval = this.evaluate7Cards([...this.oppCards, ...this.communityCards]);
         const preflopStr = this.getPreflopStrength(this.oppCards);
 
-        // 1. 計算對手當前的真實勝率信心度
         let handConfidence = 0;
         if (this.stage === 'preflop') {
           handConfidence = preflopStr;
@@ -843,7 +842,6 @@
           else handConfidence = 0.20;
         }
 
-        // 2. 判斷是否啟動詐唬 (Bluff)
         const isTutorialBluff = (this.config.isTutorial && this.handNum === 2);
         const isBluffing = isTutorialBluff || (handConfidence < 0.4 && Math.random() < profile.bluffFreq);
 
@@ -853,7 +851,6 @@
           document.getElementById('pk-opp-avatar').src = this.config.opponent.avatarNormal;
         }
 
-        // 3. 面對玩家加注或 All-in 時的棄牌判斷
         if (!this.config.isTutorial && (playerAct === 'raise' || playerAct === 'allin')) {
           const requiredConfidence = playerAct === 'allin'
             ? profile.tightness + 0.25
@@ -868,7 +865,6 @@
           }
         }
 
-        // 4. 對手跟注，並判斷是否反加注 (Re-Raise)
         const callAmt = Math.min(this.oppChips, raiseAmt);
         this.oppChips -= callAmt;
         this.pot += callAmt;
@@ -892,7 +888,6 @@
             : `冷靜跟注 $${callAmt}`;
         }
 
-        // 5. 推進發牌階段
         if (this.playerChips === 0 || this.oppChips === 0) {
           while (this.communityCards.length < 5) {
             this.dealNextCommunity();
@@ -993,19 +988,20 @@
         }
       },
 
+      // 撲克牌放大至 w-20 h-28 ~ md:w-24 md:h-36，點數與花色全面放大
       renderCardHTML(card, hidden = false) {
         if (hidden) {
-          return `<div class="w-14 h-20 md:w-16 md:h-24 rounded-lg border-2 border-amber-500/50 bg-red-950 card-shadow overflow-hidden flex items-center justify-center">
+          return `<div class="w-20 h-28 md:w-24 md:h-36 rounded-xl border-2 border-amber-500/60 bg-red-950 card-shadow overflow-hidden flex items-center justify-center">
             <img src="assets/07_card_back.png" class="w-full h-full object-cover" onerror="this.style.display='none'" />
           </div>`;
         }
         const isRed = card.suit === '♥' || card.suit === '♦';
         const valMap = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
         const label = valMap[card.value] || card.value;
-        return `<div class="w-14 h-20 md:w-16 md:h-24 rounded-lg bg-zinc-100 border border-zinc-300 card-shadow flex flex-col justify-between p-1.5 ${isRed ? 'text-red-600' : 'text-zinc-900'}">
-          <div class="text-xs md:text-sm font-black leading-none">${label}${card.suit}</div>
-          <div class="text-xl md:text-2xl self-center">${card.suit}</div>
-          <div class="text-xs md:text-sm font-black leading-none self-end rotate-180">${label}${card.suit}</div>
+        return `<div class="w-20 h-28 md:w-24 md:h-36 rounded-xl bg-zinc-100 border-2 border-zinc-300 card-shadow flex flex-col justify-between p-2 md:p-2.5 ${isRed ? 'text-red-600' : 'text-zinc-900'}">
+          <div class="text-base md:text-xl font-black leading-none">${label}${card.suit}</div>
+          <div class="text-3xl md:text-4xl self-center">${card.suit}</div>
+          <div class="text-base md:text-xl font-black leading-none self-end rotate-180">${label}${card.suit}</div>
         </div>`;
       },
 
@@ -1032,7 +1028,7 @@
           if (this.communityCards[i]) {
             commHTML += this.renderCardHTML(this.communityCards[i], false);
           } else {
-            commHTML += `<div class="w-14 h-20 md:w-16 md:h-24 rounded-lg border border-dashed border-emerald-400/30 bg-emerald-950/30"></div>`;
+            commHTML += `<div class="w-20 h-28 md:w-24 md:h-36 rounded-xl border-2 border-dashed border-emerald-400/40 bg-emerald-950/40"></div>`;
           }
         }
         document.getElementById('pk-community-cards').innerHTML = commHTML;
