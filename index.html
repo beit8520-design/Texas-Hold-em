@@ -18,7 +18,6 @@
     .neon-text-cyan { text-shadow: 0 0 8px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4); }
     .neon-border { box-shadow: 0 0 15px rgba(236, 72, 153, 0.3), inset 0 0 10px rgba(34, 211, 238, 0.2); }
     .card-shadow { box-shadow: 0 6px 14px rgba(0, 0, 0, 0.75); }
-    /* 讓白底立繪在暗色背景上稍微融合，若已去背為透明PNG則不影響 */
     .sprite-blend {
       filter: drop-shadow(0 10px 18px rgba(0,0,0,0.85));
       border-radius: 12px;
@@ -50,7 +49,7 @@
       </div>
       <div class="flex items-center space-x-2">
         <span class="text-xs text-zinc-400">下期還款目標</span>
-        <span class="text-sm font-bold text-amber-400 font-mono" id="hud-debt">$200,000 (Day 3)</span>
+        <span class="text-sm font-bold text-amber-400 font-mono" id="hud-debt">$20,000 (Day 3)</span>
       </div>
     </div>
 
@@ -94,7 +93,7 @@
       <h1 class="text-5xl md:text-6xl font-black tracking-tight text-white mb-4 neon-text-pink">九龍灣：血色籌碼</h1>
       <p class="text-zinc-300 text-sm md:text-base mb-8 leading-relaxed">
         背負一千萬高利貸的 21 天生死倒數。<br>
-        在暗潮洶湧的地下賭場裡，算牌只是基本功——看穿微表情、操控出千道具，從獵物變成莊家。
+        在暗潮洶湧的地下賭場裡，算牌只是基本功——看穿微表情、識破對手牌風與出千道具，從獵物變成莊家。
       </p>
       <div class="flex space-x-4">
         <button onclick="Game.startNewGame()" class="px-8 py-3.5 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-lg shadow-lg shadow-pink-600/30 transition transform hover:scale-105">
@@ -108,25 +107,20 @@
 
     <!-- 畫面 1：視覺小說劇情模式 (VN Mode) -->
     <section id="screen-vn" class="hidden relative z-20 w-full h-full flex flex-col justify-end">
-      <!-- 角色立繪區 -->
       <div class="flex-1 w-full max-w-6xl mx-auto flex items-end justify-between px-8 pt-6 pointer-events-none">
-        <!-- 左側立繪（通常為主角） -->
         <div class="w-72 md:w-80 h-[440px] flex items-end justify-center transition-all duration-300" id="vn-left-wrap">
           <img id="vn-sprite-left" src="" alt="" class="max-h-full object-contain sprite-blend hidden" onerror="this.style.display='none'" />
         </div>
-        <!-- 右側立繪（NPC / 對手） -->
         <div class="w-72 md:w-80 h-[440px] flex items-end justify-center transition-all duration-300" id="vn-right-wrap">
           <img id="vn-sprite-right" src="" alt="" class="max-h-full object-contain sprite-blend hidden" onerror="this.style.display='none'" />
         </div>
       </div>
 
-      <!-- 分歧選項浮層 -->
       <div id="vn-choices" class="hidden absolute inset-0 bg-zinc-950/75 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 space-y-4">
         <div class="text-cyan-400 text-sm tracking-widest uppercase mb-2">做出你的抉擇</div>
         <div id="vn-choices-list" class="w-full max-w-2xl flex flex-col space-y-3"></div>
       </div>
 
-      <!-- 底部對話框 -->
       <div onclick="VN.next()" class="relative z-20 w-full max-w-5xl mx-auto mb-6 bg-zinc-950/95 border border-zinc-700/80 rounded-xl p-6 cursor-pointer neon-border hover:border-pink-500/60 transition">
         <div class="flex items-center justify-between mb-2">
           <span id="vn-speaker" class="px-3 py-0.5 bg-pink-600/20 border border-pink-500/50 text-pink-400 font-bold text-sm rounded">系統</span>
@@ -151,7 +145,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <!-- 行動 1：前往黑市 -->
           <div class="bg-zinc-900/90 border border-zinc-700 rounded-xl p-5 flex flex-col justify-between hover:border-cyan-500 transition">
             <div>
               <div class="text-cyan-400 font-bold text-lg mb-1">前往後巷黑市</div>
@@ -170,7 +163,6 @@
             <div class="text-[11px] text-zinc-500 mt-3">* 購買道具不消耗白天行動次數</div>
           </div>
 
-          <!-- 行動 2：休息調整心態 -->
           <div class="bg-zinc-900/90 border border-zinc-700 rounded-xl p-5 flex flex-col justify-between hover:border-purple-500 transition">
             <div>
               <div class="text-purple-400 font-bold text-lg mb-1">拉上窗簾補眠</div>
@@ -186,7 +178,6 @@
             </button>
           </div>
 
-          <!-- 行動 3：研究對手情報 / 兼職 -->
           <div class="bg-zinc-900/90 border border-zinc-700 rounded-xl p-5 flex flex-col justify-between hover:border-amber-500 transition">
             <div>
               <div class="text-amber-400 font-bold text-lg mb-1">分析地下盤口數據</div>
@@ -212,7 +203,6 @@
 
     <!-- 畫面 3：德州撲克核心牌桌 (Poker Table) -->
     <section id="screen-poker" class="hidden relative z-20 w-full h-full flex flex-col justify-between p-4">
-      <!-- 牌桌資訊列 -->
       <div class="w-full max-w-6xl mx-auto flex justify-between items-center bg-zinc-950/80 px-5 py-2 rounded-xl border border-zinc-800">
         <div class="flex items-center space-x-4">
           <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded text-xs font-bold" id="pk-venue">廢棄碼頭倉庫</span>
@@ -220,42 +210,38 @@
           <span class="text-xs text-zinc-300">本晚局數：<strong class="text-cyan-400 font-mono" id="pk-hand-count">1 / 5</strong></span>
         </div>
         <div id="pk-tell-hint" class="text-xs text-pink-300 italic">
-          觀察對手表情變化，尋找詐唬破綻...
+          觀察對手表情變化與牌風，尋找破綻...
         </div>
       </div>
 
-      <!-- 橢圓賭桌主體 -->
       <div class="relative w-full max-w-5xl h-[430px] mx-auto my-auto felt-bg rounded-[180px] border-[10px] border-zinc-900 shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col items-center justify-between py-6 px-12">
         
-        <!-- 對手資訊區 (上方) -->
+        <!-- 對手資訊區 -->
         <div class="flex items-center space-x-4 bg-zinc-950/90 border border-zinc-700 px-5 py-2.5 rounded-2xl shadow-xl">
           <img id="pk-opp-avatar" src="assets/12_char_scar_1.png" class="w-16 h-16 rounded-full object-cover object-top border-2 border-pink-500 bg-zinc-800" onerror="this.src='https://placehold.co/100x100/18181b/f43f5e?text=OPP'" />
           <div>
             <div class="flex items-center space-x-2">
               <span class="font-bold text-white text-base" id="pk-opp-name">討債打手「刀疤」</span>
-              <span class="text-[11px] px-2 py-0.5 bg-zinc-800 text-zinc-300 rounded" id="pk-opp-style">激進型</span>
+              <span class="text-[11px] px-2 py-0.5 bg-zinc-800 text-amber-300 border border-amber-500/30 rounded" id="pk-opp-style">直覺進攻型</span>
             </div>
             <div class="text-sm font-mono text-amber-400 font-bold" id="pk-opp-chips">$5,000</div>
             <div class="text-xs text-cyan-300 mt-0.5" id="pk-opp-action">等待發牌...</div>
           </div>
-          <!-- 對手手牌 -->
           <div class="flex space-x-1.5 pl-3" id="pk-opp-cards"></div>
         </div>
 
-        <!-- 中央公共牌與底池 (Pot) -->
+        <!-- 中央公共牌與底池 -->
         <div class="flex flex-col items-center my-2">
           <div class="px-5 py-1 bg-zinc-950/85 border border-amber-500/40 rounded-full text-amber-400 font-mono font-bold text-base mb-3 shadow">
             底池 POT: <span id="pk-pot">$0</span>
           </div>
-          <div class="flex space-x-2.5 h-24 items-center" id="pk-community-cards">
-            <!-- 5張公共牌動態生成 -->
-          </div>
+          <div class="flex space-x-2.5 h-24 items-center" id="pk-community-cards"></div>
           <div id="pk-message" class="mt-2 text-sm font-bold text-white bg-zinc-950/80 px-4 py-1 rounded-full">
             準備開始牌局
           </div>
         </div>
 
-        <!-- 玩家手牌與狀態 (下方) -->
+        <!-- 玩家手牌與狀態 -->
         <div class="flex items-center space-x-6">
           <div class="flex space-x-2" id="pk-player-cards"></div>
           <div class="bg-zinc-950/90 border border-emerald-500/40 px-4 py-2 rounded-xl">
@@ -266,9 +252,8 @@
         </div>
       </div>
 
-      <!-- 底部操作控制列：下注 + 出千道具 -->
+      <!-- 底部操作控制列 -->
       <div class="w-full max-w-6xl mx-auto bg-zinc-950/95 border border-zinc-800 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
-        <!-- 出千道具欄 -->
         <div class="flex items-center space-x-2">
           <span class="text-xs font-bold text-pink-400 mr-1">出千道具：</span>
           <button id="btn-cheat-eyedrops" onclick="Poker.useCheat('eyedrops')" class="px-3 py-2 bg-zinc-900 hover:bg-cyan-950 border border-cyan-700/60 rounded-lg text-xs flex items-center space-x-1.5 disabled:opacity-40 transition">
@@ -279,7 +264,6 @@
           </button>
         </div>
 
-        <!-- 標準德州撲克下注按鈕 -->
         <div id="pk-controls" class="flex items-center space-x-2.5">
           <button onclick="Poker.playerAction('fold')" class="px-5 py-2.5 bg-zinc-800 hover:bg-red-900/80 text-zinc-200 font-bold text-sm rounded-xl border border-zinc-600 transition">
             蓋牌 (Fold)
@@ -295,7 +279,6 @@
           </button>
         </div>
 
-        <!-- 下一局 / 離開牌桌 -->
         <div id="pk-next-wrap" class="hidden flex items-center space-x-3">
           <button id="btn-next-hand" onclick="Poker.startNextHand()" class="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm rounded-xl transition">
             下一手牌 →
@@ -379,10 +362,11 @@
           isTutorial: true,
           opponent: {
             name: '討債打手「刀疤」',
-            style: '虛張聲勢型',
+            style: '直覺進攻型（教學對手）',
             chips: 5000,
             avatarNormal: 'assets/12_char_scar_1.png',
-            avatarBluff: 'assets/14_char_scar_3.png'
+            avatarBluff: 'assets/14_char_scar_3.png',
+            aiProfile: { tightness: 0.30, aggression: 0.60, bluffFreq: 0.35, iq: 2 }
           },
           onWin: () => VN.loadScene('prologue_win'),
           onLose: () => Game.triggerEnding('bad_sea')
@@ -400,10 +384,11 @@
           isTutorial: true,
           opponent: {
             name: '討債打手「刀疤」',
-            style: '暴躁進攻型',
+            style: '暴躁進攻型（被激怒）',
             chips: 5000,
             avatarNormal: 'assets/12_char_scar_1.png',
-            avatarBluff: 'assets/14_char_scar_3.png'
+            avatarBluff: 'assets/14_char_scar_3.png',
+            aiProfile: { tightness: 0.25, aggression: 0.80, bluffFreq: 0.45, iq: 2 }
           },
           onWin: () => VN.loadScene('prologue_win'),
           onLose: () => Game.triggerEnding('bad_sea')
@@ -413,7 +398,7 @@
         bg: 'assets/01_bg_casino_1_dock.jpg',
         lines: [
           { speaker: '討債打手「刀疤」', left: 'assets/09_char_protagonist_1.png', right: 'assets/12_char_scar_1.png', text: '……有點本事，居然真的把我的籌碼全吃光了。' },
-          { speaker: '討債打手「刀疤」', left: 'assets/09_char_protagonist_1.png', right: 'assets/13_char_scar_2.png', text: '記住這份「21 天還款契約」——每 3 天結算一次。Day 3 晚上 12 點前，你必須準備好 $20,000（本輪試玩版濃縮目標）交給我。明天去後巷的「鐵鏽俱樂部」碰碰運氣吧！' }
+          { speaker: '討債打手「刀疤」', left: 'assets/09_char_protagonist_1.png', right: 'assets/13_char_scar_2.png', text: '記住這份「21 天還款契約」——每 3 天結算一次。Day 3 晚上 12 點前，你必須準備好 $20,000（試玩版第一期目標）交給我。明天去後巷的「鐵鏽俱樂部」碰碰運氣吧！' }
         ],
         action: () => {
           State.day = 2;
@@ -427,7 +412,7 @@
         lines: [
           { speaker: '系統旁白', left: 'assets/09_char_protagonist_1.png', right: '', text: 'Day 2 清晨。破舊出租套房的牆上貼滿了紅色催繳單。桌上的舊手機突然震動起來。' },
           { speaker: '情報販子「阿鬼」', left: 'assets/10_char_protagonist_2.png', right: 'assets/15_char_ghost_1.png', text: '陳先生，聽說你昨晚在碼頭把「刀疤」剃了個光頭？我是阿鬼，專門在九龍灣賣點「能讓人看穿底牌的小玩意」。' },
-          { speaker: '情報販子「阿鬼」', left: 'assets/10_char_protagonist_2.png', right: 'assets/16_char_ghost_2.png', text: '鐵鏽俱樂部裡有個叫「肥仔強」的暴發戶，每晚都帶著大把鈔票去送錢。不過那群老油條都會出千，來後巷找我買點防身道具吧，我先送你一瓶試用品！' }
+          { speaker: '情報販子「阿鬼」', left: 'assets/10_char_protagonist_2.png', right: 'assets/16_char_ghost_2.png', text: '鐵鏽俱樂部裡有幾種截然不同的牌手：愛跟注到底的醉鬼、愛虛張聲勢的暴發戶「肥仔強」，還有只打大牌的職業高手。先送你一瓶透視眼藥水防身吧！' }
         ],
         action: () => {
           State.inventory.eyedrops += 1;
@@ -615,28 +600,31 @@
       },
       goNightPoker() {
         document.getElementById('bg-layer').style.backgroundImage = `url('assets/01_bg_casino_1_dock.jpg')`;
-        // 隨機抽取第一章鐵鏽俱樂部對手
+        // 具備明確強弱與牌風區隔的三位對手
         const opponents = [
           {
-            name: '暴發戶「肥仔強」',
-            style: '跟注站 / 容易上頭',
-            chips: 18000,
-            avatarNormal: 'assets/22_npc_gambler_2_normal.png',
-            avatarBluff: 'assets/23_npc_gambler_2_sweat.png'
-          },
-          {
             name: '醉醺醺的上班族',
-            style: '鬆兇型 / 亂推All-in',
+            style: '鬆弱跟注站（不愛蓋牌）',
             chips: 12000,
             avatarNormal: 'assets/21_npc_gambler_1.png',
-            avatarBluff: 'assets/21_npc_gambler_1.png'
+            avatarBluff: 'assets/21_npc_gambler_1.png',
+            aiProfile: { tightness: 0.15, aggression: 0.15, bluffFreq: 0.05, iq: 1 }
+          },
+          {
+            name: '暴發戶「肥仔強」',
+            style: '鬆兇型（愛演戲詐唬）',
+            chips: 18000,
+            avatarNormal: 'assets/22_npc_gambler_2_normal.png',
+            avatarBluff: 'assets/23_npc_gambler_2_sweat.png',
+            aiProfile: { tightness: 0.30, aggression: 0.80, bluffFreq: 0.45, iq: 2 }
           },
           {
             name: '冷面職業牌手',
-            style: '緊兇型 / 精於算牌',
+            style: '緊兇型（精準算牌高手）',
             chips: 22000,
             avatarNormal: 'assets/24_npc_gambler_3.png',
-            avatarBluff: 'assets/24_npc_gambler_3.png'
+            avatarBluff: 'assets/24_npc_gambler_3.png',
+            aiProfile: { tightness: 0.65, aggression: 0.70, bluffFreq: 0.15, iq: 3 }
           }
         ];
         const opp = opponents[Math.floor(Math.random() * opponents.length)];
@@ -671,7 +659,7 @@
     };
 
     // ==========================================
-    // 5. 德州撲克核心演算法與牌桌引擎 (Texas Hold'em Engine)
+    // 5. 德州撲克核心演算法與智慧 AI 引擎
     // ==========================================
     const Poker = {
       config: null,
@@ -683,7 +671,7 @@
       playerChips: 0,
       oppChips: 0,
       currentBet: 0,
-      stage: 'preflop', // preflop, flop, turn, river, showdown
+      stage: 'preflop',
       handNum: 0,
       revealOppCard: false,
 
@@ -731,24 +719,27 @@
         this.deck = this.createDeck();
         document.getElementById('pk-opp-avatar').src = this.config.opponent.avatarNormal;
 
-        // 教學腳本固定發牌（確保序章戲劇張力）
         if (this.config.isTutorial && this.handNum === 1) {
-          this.playerCards = [{ suit: '♥', value: 14 }, { suit: '♠', value: 13 }]; // AK
-          this.oppCards = [{ suit: '♦', value: 13 }, { suit: '♣', value: 10 }]; // KT
+          this.playerCards = [{ suit: '♥', value: 14 }, { suit: '♠', value: 13 }];
+          this.oppCards = [{ suit: '♦', value: 13 }, { suit: '♣', value: 10 }];
           document.getElementById('pk-tell-hint').innerText = '【教學提示】你拿到頂級起手牌 AK！積極加注贏取底池。';
         } else if (this.config.isTutorial && this.handNum === 2) {
-          this.playerCards = [{ suit: '♣', value: 7 }, { suit: '♦', value: 2 }]; // 72o
-          this.oppCards = [{ suit: '♠', value: 9 }, { suit: '♣', value: 8 }]; // 98o 詐唬
+          this.playerCards = [{ suit: '♣', value: 7 }, { suit: '♦', value: 2 }];
+          this.oppCards = [{ suit: '♠', value: 9 }, { suit: '♣', value: 8 }];
           document.getElementById('pk-tell-hint').innerText = '【讀心提示】注意刀疤的頭像！若他額頭冒汗暴怒，代表他在虛張聲勢（Bluff）！';
         } else {
           this.playerCards = [this.deck.pop(), this.deck.pop()];
           this.oppCards = [this.deck.pop(), this.deck.pop()];
-          document.getElementById('pk-tell-hint').innerText = State.flags.vivian_ally
-            ? '【薇薇安暗號】荷官輕敲桌面——對手起手牌結構偏弱。'
-            : '觀察對手下注節奏與表情變化，尋找破綻...';
+          const preStr = this.getPreflopStrength(this.oppCards);
+          if (State.flags.vivian_ally) {
+            document.getElementById('pk-tell-hint').innerText = preStr > 0.7
+              ? '【薇薇安暗號】荷官輕摸領口——警告！對手這局起手牌極強！'
+              : '【薇薇安暗號】荷官輕敲桌面——對手起手牌結構偏弱。';
+          } else {
+            document.getElementById('pk-tell-hint').innerText = `對手牌風【${this.config.opponent.style}】：觀察其加注與表情破綻...`;
+          }
         }
 
-        // 扣除盲注
         const sb = Math.min(this.playerChips, this.config.blinds[0]);
         const bb = Math.min(this.oppChips, this.config.blinds[1]);
         this.playerChips -= sb;
@@ -813,40 +804,107 @@
           raiseAmt = pay;
         }
 
-        // 對手 AI 回應
         this.aiRespond(action, raiseAmt);
       },
 
+      getPreflopStrength(cards) {
+        const v1 = Math.max(cards[0].value, cards[1].value);
+        const v2 = Math.min(cards[0].value, cards[1].value);
+        const isPair = v1 === v2;
+        const isSuited = cards[0].suit === cards[1].suit;
+        const gap = v1 - v2;
+
+        if (isPair) {
+          if (v1 >= 11) return 0.95;
+          if (v1 >= 7) return 0.75;
+          return 0.55;
+        }
+        let score = (v1 + v2) / 28;
+        if (isSuited) score += 0.08;
+        if (gap === 1) score += 0.06;
+        if (v1 === 14 && v2 >= 10) score += 0.15;
+        return Math.min(0.9, Math.max(0.1, score));
+      },
+
       aiRespond(playerAct, raiseAmt) {
+        const profile = this.config.opponent.aiProfile || { tightness: 0.35, aggression: 0.5, bluffFreq: 0.25, iq: 2 };
         const oppEval = this.evaluate7Cards([...this.oppCards, ...this.communityCards]);
-        const isBluffing = (this.config.isTutorial && this.handNum === 2) || (Math.random() < 0.25);
+        const preflopStr = this.getPreflopStrength(this.oppCards);
+
+        // 1. 計算對手當前的真實勝率信心度
+        let handConfidence = 0;
+        if (this.stage === 'preflop') {
+          handConfidence = preflopStr;
+        } else {
+          if (oppEval.score >= 300) handConfidence = 0.95;
+          else if (oppEval.score >= 200) handConfidence = 0.80;
+          else if (oppEval.score >= 110) handConfidence = 0.65;
+          else if (oppEval.score >= 100) handConfidence = 0.45;
+          else handConfidence = 0.20;
+        }
+
+        // 2. 判斷是否啟動詐唬 (Bluff)
+        const isTutorialBluff = (this.config.isTutorial && this.handNum === 2);
+        const isBluffing = isTutorialBluff || (handConfidence < 0.4 && Math.random() < profile.bluffFreq);
 
         if (isBluffing) {
           document.getElementById('pk-opp-avatar').src = this.config.opponent.avatarBluff;
+        } else {
+          document.getElementById('pk-opp-avatar').src = this.config.opponent.avatarNormal;
         }
 
-        // 若玩家 All-in 且對手牌力極差又沒在硬演，對手蓋牌
-        if (playerAct === 'allin' && oppEval.score < 200 && !isBluffing && !this.config.isTutorial) {
-          document.getElementById('pk-opp-action').innerText = '皺眉蓋牌 (Fold)';
-          document.getElementById('pk-message').innerText = `對手被你的氣勢逼退！你贏得 $${this.pot}！`;
-          this.playerChips += this.pot;
-          this.endHand();
-          return;
+        // 3. 面對玩家加注或 All-in 時的棄牌判斷
+        if (!this.config.isTutorial && (playerAct === 'raise' || playerAct === 'allin')) {
+          const requiredConfidence = playerAct === 'allin'
+            ? profile.tightness + 0.25
+            : profile.tightness;
+
+          if (handConfidence < requiredConfidence && !isBluffing) {
+            document.getElementById('pk-opp-action').innerText = '冷靜審視後蓋牌 (Fold)';
+            document.getElementById('pk-message').innerText = `對手看穿了局勢選擇蓋牌！你直接贏得 $${this.pot}！`;
+            this.playerChips += this.pot;
+            this.endHand();
+            return;
+          }
         }
 
-        // 對手跟注
+        // 4. 對手跟注，並判斷是否反加注 (Re-Raise)
         const callAmt = Math.min(this.oppChips, raiseAmt);
         this.oppChips -= callAmt;
         this.pot += callAmt;
-        document.getElementById('pk-opp-action').innerText = isBluffing ? '額頭冒汗，強裝鎮定跟注！' : `冷靜跟注 $${callAmt}`;
 
-        // 推進發牌階段
+        let counterRaise = 0;
+        if (this.oppChips > this.config.blinds[1] * 2 && playerAct !== 'allin' && !this.config.isTutorial) {
+          if ((handConfidence > 0.75 || isBluffing) && Math.random() < profile.aggression) {
+            counterRaise = Math.min(this.oppChips, this.config.blinds[1] * 3);
+            this.oppChips -= counterRaise;
+            this.pot += counterRaise;
+          }
+        }
+
+        if (counterRaise > 0) {
+          document.getElementById('pk-opp-action').innerText = isBluffing
+            ? `眼神閃爍，猛然反加注 $${counterRaise}！`
+            : `嘴角上揚，強勢反加注 $${counterRaise}！`;
+        } else {
+          document.getElementById('pk-opp-action').innerText = isBluffing
+            ? '額頭冒汗，強裝鎮定跟注！'
+            : `冷靜跟注 $${callAmt}`;
+        }
+
+        // 5. 推進發牌階段
         if (this.playerChips === 0 || this.oppChips === 0) {
-          // 有人 All-in，直接發完剩餘公共牌進入攤牌
           while (this.communityCards.length < 5) {
             this.dealNextCommunity();
           }
           this.showdown();
+          return;
+        }
+
+        if (counterRaise > 0) {
+          this.currentBet = counterRaise;
+          document.getElementById('pk-message').innerText = `對手反加注 $${counterRaise}！你要跟注還是蓋牌？`;
+          this.updateTableUI();
           return;
         }
 
@@ -935,7 +993,6 @@
         }
       },
 
-      // 渲染單張撲克牌 HTML
       renderCardHTML(card, hidden = false) {
         if (hidden) {
           return `<div class="w-14 h-20 md:w-16 md:h-24 rounded-lg border-2 border-amber-500/50 bg-red-950 card-shadow overflow-hidden flex items-center justify-center">
@@ -963,16 +1020,13 @@
         document.getElementById('btn-cheat-eyedrops').disabled = State.inventory.eyedrops <= 0 || this.stage === 'showdown';
         document.getElementById('btn-cheat-marked').disabled = State.inventory.marked_deck <= 0 || this.stage === 'showdown';
 
-        // 渲染玩家手牌
         document.getElementById('pk-player-cards').innerHTML = this.playerCards.map(c => this.renderCardHTML(c, false)).join('');
 
-        // 渲染對手手牌（攤牌全開，透視開第1張）
         document.getElementById('pk-opp-cards').innerHTML = this.oppCards.map((c, idx) => {
           const isOpen = this.stage === 'showdown' || (this.revealOppCard && idx === 0);
           return this.renderCardHTML(c, !isOpen);
         }).join('');
 
-        // 渲染公共牌
         let commHTML = '';
         for (let i = 0; i < 5; i++) {
           if (this.communityCards[i]) {
@@ -983,23 +1037,17 @@
         }
         document.getElementById('pk-community-cards').innerHTML = commHTML;
 
-        // 即時計算玩家當前牌型
         const currentEval = this.evaluate7Cards([...this.playerCards, ...this.communityCards]);
         document.getElementById('pk-player-rank').innerText = `當前牌型：${currentEval.name}`;
       },
 
-      // ==========================================
-      // 德州撲克 7 選 5 牌型評估演算法
-      // ==========================================
       evaluate7Cards(cards) {
         if (cards.length < 5) {
-          // 翻牌前僅評估2張手牌
           const v1 = cards[0].value, v2 = cards[1].value;
           if (v1 === v2) return { score: 100 + v1, name: '口袋對子' };
           return { score: Math.max(v1, v2), name: '高牌' };
         }
 
-        // 產生所有 C(n, 5) 組合取最高分
         let best = { score: 0, name: '高牌' };
         const n = cards.length;
         for (let i = 0; i < n - 4; i++) {
@@ -1026,11 +1074,9 @@
         let isStraight = false;
         let straightHigh = vals[0];
 
-        // 一般順子檢查
         if (vals[0] - vals[1] === 1 && vals[1] - vals[2] === 1 && vals[2] - vals[3] === 1 && vals[3] - vals[4] === 1) {
           isStraight = true;
         }
-        // A-2-3-4-5 最小順子
         if (vals[0] === 14 && vals[1] === 5 && vals[2] === 4 && vals[3] === 3 && vals[4] === 2) {
           isStraight = true;
           straightHigh = 5;
