@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>九龍灣：血色籌碼 — 序章 & 第一章</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #09090b;
+      color: #f4f4f5;
+      overflow: hidden;
+      user-select: none;
+    }
+    .neon-text-pink { text-shadow: 0 0 8px rgba(236, 72, 153, 0.8), 0 0 20px rgba(236, 72, 153, 0.4); }
+    .neon-text-cyan { text-shadow: 0 0 8px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.4); }
+    .neon-border { box-shadow: 0 0 15px rgba(236, 72, 153, 0.3), inset 0 0 10px rgba(34, 211, 238, 0.2); }
+    .card-shadow { box-shadow: 0 6px 14px rgba(0, 0, 0, 0.75); }
+    /* 讓白底立繪在暗色背景上稍微融合，若已去背為透明PNG則不影響 */
+    .sprite-blend {
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.85));
+      border-radius: 12px;
+    }
+    .felt-bg {
+      background-image: url('assets/06_table_felt_tier1.jpg'), radial-gradient(circle at center, #15803d 0%, #052e16 100%);
+      background-size: cover;
+      background-position: center;
+    }
+    @keyframes pulseFast {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .animate-pulse-fast { animation: pulseFast 1.2s infinite; }
+  </style>
+</head>
+<body class="w-screen h-screen flex flex-col justify-between relative">
+
+  <!-- 頂部狀態欄 (HUD) -->
+  <header class="w-full h-14 bg-zinc-950/90 border-b border-zinc-800 px-6 flex items-center justify-between z-30 backdrop-blur-md">
+    <div class="flex items-center space-x-6">
+      <div class="text-lg font-black tracking-wider text-pink-500 neon-text-pink">
+        DAY <span id="hud-day">1</span> <span class="text-xs text-zinc-400 font-normal ml-1" id="hud-phase">序章：血色借據</span>
+      </div>
+      <div class="h-5 w-[1px] bg-zinc-700"></div>
+      <div class="flex items-center space-x-2">
+        <span class="text-xs text-zinc-400">持有資金</span>
+        <span class="text-lg font-bold text-emerald-400 font-mono" id="hud-money">$1,000</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="text-xs text-zinc-400">下期還款目標</span>
+        <span class="text-sm font-bold text-amber-400 font-mono" id="hud-debt">$200,000 (Day 3)</span>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-5">
+      <div class="flex items-center space-x-2">
+        <span class="text-xs text-zinc-400">壓力 SAN</span>
+        <div class="w-24 h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+          <div id="hud-san-bar" class="h-full bg-purple-500 transition-all duration-300" style="width: 30%;"></div>
+        </div>
+        <span class="text-xs font-mono text-purple-300" id="hud-san">30</span>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <span class="text-xs text-zinc-400">專注力</span>
+        <span class="text-sm font-bold text-cyan-400 font-mono" id="hud-focus">50</span>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <span class="text-xs text-red-400 font-bold">警戒值</span>
+        <div class="w-24 h-2.5 bg-zinc-800 rounded-full overflow-hidden border border-red-900/50">
+          <div id="hud-suspicion-bar" class="h-full bg-red-600 transition-all duration-300" style="width: 0%;"></div>
+        </div>
+        <span class="text-xs font-mono text-red-400" id="hud-suspicion">0%</span>
+      </div>
+
+      <button onclick="Game.saveGame()" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-xs rounded border border-zinc-600 transition">
+        手動存檔
+      </button>
+    </div>
+  </header>
+
+  <!-- 主舞台容器 -->
+  <main id="stage" class="relative flex-1 w-full h-full overflow-hidden flex items-center justify-center">
+    <!-- 背景圖層 -->
+    <div id="bg-layer" class="absolute inset-0 bg-cover bg-center transition-all duration-700" style="background-image: url('assets/01_bg_casino_1_dock.jpg');"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-zinc-950/60"></div>
+
+    <!-- 畫面 0：標題畫面 -->
+    <section id="screen-title" class="relative z-20 flex flex-col items-center text-center p-8 max-w-2xl">
+      <div class="text-xs tracking-[0.4em] text-cyan-400 uppercase mb-2">KOWLOON BAY NOIR POKER</div>
+      <h1 class="text-5xl md:text-6xl font-black tracking-tight text-white mb-4 neon-text-pink">九龍灣：血色籌碼</h1>
+      <p class="text-zinc-300 text-sm md:text-base mb-8 leading-relaxed">
+        背負一千萬高利貸的 21 天生死倒數。<br>
+        在暗潮洶湧的地下賭場裡，算牌只是基本功——看穿微表情、操控出千道具，從獵物變成莊家。
+      </p>
+      <div class="flex space-x-4">
+        <button onclick="Game.startNewGame()" class="px-8 py-3.5 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-lg shadow-lg shadow-pink-600/30 transition transform hover:scale-105">
+          開始新遊戲（序章）
+        </button>
+        <button id="btn-load" onclick="Game.loadGame()" class="px-8 py-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold rounded-lg border border-zinc-600 transition hidden">
+          讀取存檔
+        </button>
+      </div>
+    </section>
+
+    <!-- 畫面 1：視覺小說劇情模式 (VN Mode) -->
+    <section id="screen-vn" class="hidden relative z-20 w-full h-full flex flex-col justify-end">
+      <!-- 角色立繪區 -->
+      <div class="flex-1 w-full max-w-6xl mx-auto flex items-end justify-between px-8 pt-6 pointer-events-none">
+        <!-- 左側立繪（通常為主角） -->
+        <div class="w-72 md:w-80 h-[440px] flex items-end justify-center transition-all duration-300" id="vn-left-wrap">
+          <img id="vn-sprite-left" src="" alt="" class="max-h-full object-contain sprite-blend hidden" onerror="this.style.display='none'" />
+        </div>
+        <!-- 右側立繪（NPC / 對手） -->
+        <div class="w-72 md:w-80 h-[440px] flex items-end justify-center transition-all duration-300" id="vn-right-wrap">
+          <img id="vn-sprite-right" src="" alt="" class="max-h-full object-contain sprite-blend hidden" onerror="this.style.display='none'" />
+        </div>
+      </div>
+
+      <!-- 分歧選項浮層 -->
+      <div id="vn-choices" class="hidden absolute inset-0 bg-zinc-950/75 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 space-y-4">
+        <div class="text-cyan-400 text-sm tracking-widest uppercase mb-2">做出你的抉擇</div>
+        <div id="vn-choices-list" class="w-full max-w-2xl flex flex-col space-y-3"></div>
+      </div>
+
+      <!-- 底部對話框 -->
+      <div onclick="VN.next()" class="relative z-20 w-full max-w-5xl mx-auto mb-6 bg-zinc-950/95 border border-zinc-700/80 rounded-xl p-6 cursor-pointer neon-border hover:border-pink-500/60 transition">
+        <div class="flex items-center justify-between mb-2">
+          <span id="vn-speaker" class="px-3 py-0.5 bg-pink-600/20 border border-pink-500/50 text-pink-400 font-bold text-sm rounded">系統</span>
+          <span class="text-xs text-zinc-500 animate-pulse">點擊對話框繼續 ▼</span>
+        </div>
+        <p id="vn-text" class="text-zinc-100 text-base md:text-lg leading-relaxed min-h-[3.5rem]"></p>
+      </div>
+    </section>
+
+    <!-- 畫面 2：白天行動整備階段 (Day Hub) -->
+    <section id="screen-hub" class="hidden relative z-20 w-full max-w-5xl mx-auto p-6">
+      <div class="bg-zinc-950/90 border border-zinc-800 rounded-2xl p-8 backdrop-blur-md shadow-2xl">
+        <div class="flex justify-between items-start border-b border-zinc-800 pb-4 mb-6">
+          <div>
+            <h2 class="text-2xl font-black text-white" id="hub-title">Day 2 清晨 — 出租套房</h2>
+            <p class="text-sm text-zinc-400 mt-1" id="hub-desc">距離第一次討債還款還有 1 天。選擇你白天的行動（每天可執行 1 次白天行動，隨後進入夜晚牌局）。</p>
+          </div>
+          <div class="text-right">
+            <div class="text-xs text-zinc-400">持有道具</div>
+            <div class="text-sm font-bold text-cyan-300 mt-1" id="hub-inventory">無</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <!-- 行動 1：前往黑市 -->
+          <div class="bg-zinc-900/90 border border-zinc-700 rounded-xl p-5 flex flex-col justify-between hover:border-cyan-500 transition">
+            <div>
+              <div class="text-cyan-400 font-bold text-lg mb-1">前往後巷黑市</div>
+              <p class="text-xs text-zinc-400 mb-4">向情報販子「阿鬼」購買出千道具，在牌桌上扭轉劣勢。</p>
+              <div class="space-y-2 text-xs">
+                <button onclick="Hub.buyItem('eyedrops', 1500)" class="w-full py-2 px-3 bg-zinc-800 hover:bg-cyan-950 border border-zinc-600 hover:border-cyan-500 rounded flex justify-between items-center">
+                  <span>透視眼藥水 (偷看對手1張牌)</span>
+                  <span class="text-emerald-400 font-mono">$1,500</span>
+                </button>
+                <button onclick="Hub.buyItem('marked_deck', 2000)" class="w-full py-2 px-3 bg-zinc-800 hover:bg-cyan-950 border border-zinc-600 hover:border-cyan-500 rounded flex justify-between items-center">
+                  <span>藥水標記牌 (將底牌換成AA)</span>
+                  <span class="text-emerald-400 font-mono">$2,000</span>
+                </button>
+              </div>
+            </div>
+            <div class="text-[11px] text-zinc-500 mt-3">* 購買道具不消耗白天行動次數</div>
+          </div>
+
+          <!-- 行動 2：休息調整心態 -->
+          <div class="bg-zinc-900/90 border border-zinc-700 rounded-xl p-5 flex flex-col justify-between hover:border-purple-500 transition">
+            <div>
+              <div class="text-purple-400 font-bold text-lg mb-1">拉上窗簾補眠</div>
+              <p class="text-xs text-zinc-400 mb-4">遠離催債電話，平復緊繃的神經，為今晚的心理戰做準備。</p>
+              <ul class="text-xs text-zinc-300 space-y-1">
+                <li>• 壓力值 SAN <span class="text-emerald-400">-20</span></li>
+                <li>• 專注力 <span class="text-cyan-400">+25</span></li>
+                <li>• 賭場警戒值 <span class="text-emerald-400">-15%</span></li>
+              </ul>
+            </div>
+            <button onclick="Hub.doAction('rest')" class="mt-4 w-full py-2.5 bg-purple-700 hover:bg-purple-600 text-white font-bold text-sm rounded-lg transition">
+              執行休息（進入夜晚）
+            </button>
+          </div>
+
+          <!-- 行動 3：研究對手情報 / 兼職 -->
+          <div class="bg-zinc-900/90 border border-zinc-700 rounded-xl p-5 flex flex-col justify-between hover:border-amber-500 transition">
+            <div>
+              <div class="text-amber-400 font-bold text-lg mb-1">分析地下盤口數據</div>
+              <p class="text-xs text-zinc-400 mb-4">運用前金融分析師的專業，幫地下外圍整理賠率表賺取外快。</p>
+              <ul class="text-xs text-zinc-300 space-y-1">
+                <li>• 獲得現金 <span class="text-emerald-400">+$3,000</span></li>
+                <li>• 壓力值 SAN <span class="text-red-400">+10</span></li>
+              </ul>
+            </div>
+            <button onclick="Hub.doAction('work')" class="mt-4 w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm rounded-lg transition">
+              接案算盤（進入夜晚）
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button onclick="Hub.goNightPoker()" class="px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl shadow-lg shadow-pink-600/30 transition">
+            直接前往今晚的牌局 →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 畫面 3：德州撲克核心牌桌 (Poker Table) -->
+    <section id="screen-poker" class="hidden relative z-20 w-full h-full flex flex-col justify-between p-4">
+      <!-- 牌桌資訊列 -->
+      <div class="w-full max-w-6xl mx-auto flex justify-between items-center bg-zinc-950/80 px-5 py-2 rounded-xl border border-zinc-800">
+        <div class="flex items-center space-x-4">
+          <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded text-xs font-bold" id="pk-venue">廢棄碼頭倉庫</span>
+          <span class="text-xs text-zinc-300">盲注：<strong class="text-white font-mono" id="pk-blinds">$10 / $20</strong></span>
+          <span class="text-xs text-zinc-300">本晚局數：<strong class="text-cyan-400 font-mono" id="pk-hand-count">1 / 5</strong></span>
+        </div>
+        <div id="pk-tell-hint" class="text-xs text-pink-300 italic">
+          觀察對手表情變化，尋找詐唬破綻...
+        </div>
+      </div>
+
+      <!-- 橢圓賭桌主體 -->
+      <div class="relative w-full max-w-5xl h-[430px] mx-auto my-auto felt-bg rounded-[180px] border-[10px] border-zinc-900 shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col items-center justify-between py-6 px-12">
+        
+        <!-- 對手資訊區 (上方) -->
+        <div class="flex items-center space-x-4 bg-zinc-950/90 border border-zinc-700 px-5 py-2.5 rounded-2xl shadow-xl">
+          <img id="pk-opp-avatar" src="assets/12_char_scar_1.png" class="w-16 h-16 rounded-full object-cover object-top border-2 border-pink-500 bg-zinc-800" onerror="this.src='https://placehold.co/100x100/18181b/f43f5e?text=OPP'" />
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-white text-base" id="pk-opp-name">討債打手「刀疤」</span>
+              <span class="text-[11px] px-2 py-0.5 bg-zinc-800 text-zinc-300 rounded" id="pk-opp-style">激進型</span>
+            </div>
+            <div class="text-sm font-mono text-amber-400 font-bold" id="pk-opp-chips">$5,000</div>
+            <div class="text-xs text-cyan-300 mt-0.5" id="pk-opp-action">等待發牌...</div>
+          </div>
+          <!-- 對手手牌 -->
+          <div class="flex space-x-1.5 pl-3" id="pk-opp-cards"></div>
+        </div>
+
+        <!-- 中央公共牌與底池 (Pot) -->
+        <div class="flex flex-col items-center my-2">
+          <div class="px-5 py-1 bg-zinc-950/85 border border-amber-500/40 rounded-full text-amber-400 font-mono font-bold text-base mb-3 shadow">
+            底池 POT: <span id="pk-pot">$0</span>
+          </div>
+          <div class="flex space-x-2.5 h-24 items-center" id="pk-community-cards">
+            <!-- 5張公共牌動態生成 -->
+          </div>
+          <div id="pk-message" class="mt-2 text-sm font-bold text-white bg-zinc-950/80 px-4 py-1 rounded-full">
+            準備開始牌局
+          </div>
+        </div>
+
+        <!-- 玩家手牌與狀態 (下方) -->
+        <div class="flex items-center space-x-6">
+          <div class="flex space-x-2" id="pk-player-cards"></div>
+          <div class="bg-zinc-950/90 border border-emerald-500/40 px-4 py-2 rounded-xl">
+            <div class="text-xs text-zinc-400">你的牌桌籌碼</div>
+            <div class="text-lg font-mono font-black text-emerald-400" id="pk-player-chips">$1,000</div>
+            <div class="text-xs text-cyan-300 font-bold mt-0.5" id="pk-player-rank">牌型計算中</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部操作控制列：下注 + 出千道具 -->
+      <div class="w-full max-w-6xl mx-auto bg-zinc-950/95 border border-zinc-800 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
+        <!-- 出千道具欄 -->
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-bold text-pink-400 mr-1">出千道具：</span>
+          <button id="btn-cheat-eyedrops" onclick="Poker.useCheat('eyedrops')" class="px-3 py-2 bg-zinc-900 hover:bg-cyan-950 border border-cyan-700/60 rounded-lg text-xs flex items-center space-x-1.5 disabled:opacity-40 transition">
+            <span>👁️ 透視眼藥水 (<span id="count-eyedrops">0</span>)</span>
+          </button>
+          <button id="btn-cheat-marked" onclick="Poker.useCheat('marked_deck')" class="px-3 py-2 bg-zinc-900 hover:bg-pink-950 border border-pink-700/60 rounded-lg text-xs flex items-center space-x-1.5 disabled:opacity-40 transition">
+            <span>🃏 藥水標記牌 (<span id="count-marked">0</span>)</span>
+          </button>
+        </div>
+
+        <!-- 標準德州撲克下注按鈕 -->
+        <div id="pk-controls" class="flex items-center space-x-2.5">
+          <button onclick="Poker.playerAction('fold')" class="px-5 py-2.5 bg-zinc-800 hover:bg-red-900/80 text-zinc-200 font-bold text-sm rounded-xl border border-zinc-600 transition">
+            蓋牌 (Fold)
+          </button>
+          <button id="btn-call" onclick="Poker.playerAction('call')" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition">
+            跟注 / 過牌
+          </button>
+          <button id="btn-raise" onclick="Poker.playerAction('raise')" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm rounded-xl transition">
+            加注 (2x)
+          </button>
+          <button onclick="Poker.playerAction('allin')" class="px-5 py-2.5 bg-pink-600 hover:bg-pink-500 text-white font-black text-sm rounded-xl shadow-lg shadow-pink-600/30 transition">
+            全下 (ALL-IN)
+          </button>
+        </div>
+
+        <!-- 下一局 / 離開牌桌 -->
+        <div id="pk-next-wrap" class="hidden flex items-center space-x-3">
+          <button id="btn-next-hand" onclick="Poker.startNextHand()" class="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm rounded-xl transition">
+            下一手牌 →
+          </button>
+          <button id="btn-leave-table" onclick="Poker.finishNightSession()" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-sm rounded-xl border border-zinc-600 transition">
+            結束今晚牌局
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 畫面 4：章節結算 / 結局畫面 -->
+    <section id="screen-ending" class="hidden relative z-30 w-full max-w-3xl mx-auto bg-zinc-950/95 border border-zinc-700 rounded-2xl p-8 text-center shadow-2xl">
+      <img id="end-cg" src="" class="w-full h-64 object-cover rounded-xl mb-6 border border-zinc-800 hidden" />
+      <div class="text-xs tracking-widest uppercase text-pink-500 mb-2" id="end-tag">CHAPTER 1 CLEAR</div>
+      <h2 class="text-3xl font-black text-white mb-4" id="end-title">第一章通關：踏入霓虹迷局</h2>
+      <p class="text-zinc-300 text-sm leading-relaxed mb-8" id="end-desc"></p>
+      <button onclick="location.reload()" class="px-8 py-3 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl transition">
+        返回主標題 / 重新挑戰
+      </button>
+    </section>
+  </main>
+
+  <script>
+    // ==========================================
+    // 1. 全域遊戲狀態 (Game State)
+    // ==========================================
+    const State = {
+      day: 1,
+      money: 1000,
+      san: 30,
+      focus: 50,
+      suspicion: 0,
+      inventory: {
+        eyedrops: 0,
+        marked_deck: 0
+      },
+      flags: {
+        vivian_ally: false,
+        no_cheat_pride: false,
+        scar_respect: false
+      },
+      currentSceneId: 'prologue_start'
+    };
+
+    // ==========================================
+    // 2. 序章與第一章劇本資料庫 (Dialogue Tree)
+    // ==========================================
+    const SCRIPTS = {
+      prologue_start: {
+        bg: 'assets/01_bg_casino_1_dock.jpg',
+        phase: '序章：血色借據',
+        lines: [
+          { speaker: '系統旁白', left: 'assets/09_char_protagonist_1.png', right: '', text: '九龍灣的夜風帶著鹹腥味。兩天前，你還是中環投行的王牌分析師；今晚，你只是一頭被捆在廢棄碼頭倉庫鐵椅上的待宰羔羊。' },
+          { speaker: '討債打手「刀疤」', left: 'assets/09_char_protagonist_1.png', right: 'assets/13_char_scar_2.png', text: '醒了？陳先生。你的好合夥人馬克帶著客戶的 800 萬飛去南美了，但借據上白紙黑字寫的是你的名字——連本帶利，整整 1,000 萬。' },
+          { speaker: '主角', left: 'assets/10_char_protagonist_2.png', right: 'assets/13_char_scar_2.png', text: '那是他偽造的簽名！給我時間，我能調出銀行的轉帳紀錄證明清白！' },
+          { speaker: '討債打手「刀疤」', left: 'assets/10_char_protagonist_2.png', right: 'assets/14_char_scar_3.png', text: '龍哥不看銀行紀錄，只看紅字白紙。原本今晚就該把你沉進海灣餵魚，但龍哥聽說你算牌算得比電腦還精……他決定給你一個機會。' }
+        ],
+        choices: [
+          {
+            label: '「這筆債我認了，說吧，怎麼還？」（冷靜應對：壓力 -5）',
+            effect: () => { State.san = Math.max(0, State.san - 5); State.flags.scar_respect = true; },
+            next: 'prologue_choice_a'
+          },
+          {
+            label: '「你們這是敲詐！龍哥就不怕條子查上門？」（激怒對手：壓力 +10）',
+            effect: () => { State.san += 10; },
+            next: 'prologue_choice_b'
+          }
+        ]
+      },
+      prologue_choice_a: {
+        bg: 'assets/01_bg_casino_1_dock.jpg',
+        lines: [
+          { speaker: '討債打手「刀疤」', left: 'assets/09_char_protagonist_1.png', right: 'assets/12_char_scar_1.png', text: '哼，算你識相。桌上這 $1,000 是龍哥借你的本金。贏光我面前的 $5,000，你就能走出這扇門；輸了，就留下一根手指！' }
+        ],
+        action: () => Poker.startMatch({
+          venue: '廢棄碼頭倉庫（生死教學局）',
+          blinds: [10, 20],
+          maxHands: 5,
+          isTutorial: true,
+          opponent: {
+            name: '討債打手「刀疤」',
+            style: '虛張聲勢型',
+            chips: 5000,
+            avatarNormal: 'assets/12_char_scar_1.png',
+            avatarBluff: 'assets/14_char_scar_3.png'
+          },
+          onWin: () => VN.loadScene('prologue_win'),
+          onLose: () => Game.triggerEnding('bad_sea')
+        })
+      },
+      prologue_choice_b: {
+        bg: 'assets/01_bg_casino_1_dock.jpg',
+        lines: [
+          { speaker: '討債打手「刀疤」', left: 'assets/10_char_protagonist_2.png', right: 'assets/14_char_scar_3.png', text: '在九龍灣，龍哥的話就是法律！桌上這 $1,000 是龍哥賞你的本金，贏光我面前的 $5,000，否則今晚你就別想完整走出去！' }
+        ],
+        action: () => Poker.startMatch({
+          venue: '廢棄碼頭倉庫（生死教學局）',
+          blinds: [10, 20],
+          maxHands: 5,
+          isTutorial: true,
+          opponent: {
+            name: '討債打手「刀疤」',
+            style: '暴躁進攻型',
+            chips: 5000,
+            avatarNormal: 'assets/12_char_scar_1.png',
+            avatarBluff: 'assets/14_char_scar_3.png'
+          },
+          onWin: () => VN.loadScene('prologue_win'),
+          onLose: () => Game.triggerEnding('bad_sea')
+        })
+      },
+      prologue_win: {
+        bg: 'assets/01_bg_casino_1_dock.jpg',
+        lines: [
+          { speaker: '討債打手「刀疤」', left: 'assets/09_char_protagonist_1.png', right: 'assets/12_char_scar_1.png', text: '……有點本事，居然真的把我的籌碼全吃光了。' },
+          { speaker: '討債打手「刀疤」', left: 'assets/09_char_protagonist_1.png', right: 'assets/13_char_scar_2.png', text: '記住這份「21 天還款契約」——每 3 天結算一次。Day 3 晚上 12 點前，你必須準備好 $20,000（本輪試玩版濃縮目標）交給我。明天去後巷的「鐵鏽俱樂部」碰碰運氣吧！' }
+        ],
+        action: () => {
+          State.day = 2;
+          Game.updateHUD();
+          VN.loadScene('ch1_day2_morning');
+        }
+      },
+      ch1_day2_morning: {
+        bg: 'assets/02_bg_apartment_slum.jpg',
+        phase: '第一章：街頭混混的泥淖',
+        lines: [
+          { speaker: '系統旁白', left: 'assets/09_char_protagonist_1.png', right: '', text: 'Day 2 清晨。破舊出租套房的牆上貼滿了紅色催繳單。桌上的舊手機突然震動起來。' },
+          { speaker: '情報販子「阿鬼」', left: 'assets/10_char_protagonist_2.png', right: 'assets/15_char_ghost_1.png', text: '陳先生，聽說你昨晚在碼頭把「刀疤」剃了個光頭？我是阿鬼，專門在九龍灣賣點「能讓人看穿底牌的小玩意」。' },
+          { speaker: '情報販子「阿鬼」', left: 'assets/10_char_protagonist_2.png', right: 'assets/16_char_ghost_2.png', text: '鐵鏽俱樂部裡有個叫「肥仔強」的暴發戶，每晚都帶著大把鈔票去送錢。不過那群老油條都會出千，來後巷找我買點防身道具吧，我先送你一瓶試用品！' }
+        ],
+        action: () => {
+          State.inventory.eyedrops += 1;
+          Hub.open();
+        }
+      },
+      ch1_day3_deadline: {
+        bg: 'assets/04_bg_debt_collector.jpg',
+        phase: 'Day 3 深夜：第一次討債結算',
+        lines: [
+          { speaker: '系統旁白', left: 'assets/10_char_protagonist_2.png', right: '', text: 'Day 3 深夜 11 點 50 分。生鏽的鐵門被推開，刀疤帶著兩名打手走了進來。' },
+          { speaker: '討債打手「刀疤」', left: 'assets/10_char_protagonist_2.png', right: 'assets/12_char_scar_1.png', text: '時間到了，陳先生。第一期還款金額 $20,000，拿出來吧。' }
+        ],
+        action: () => {
+          if (State.money >= 20000) {
+            State.money -= 20000;
+            Game.updateHUD();
+            VN.loadScene('ch1_day3_pass');
+          } else {
+            Game.triggerEnding('bad_sea');
+          }
+        }
+      },
+      ch1_day3_pass: {
+        bg: 'assets/04_bg_debt_collector.jpg',
+        lines: [
+          { speaker: '討債打手「刀疤」', left: 'assets/11_char_protagonist_3.png', right: 'assets/13_char_scar_2.png', text: '整整兩萬，一毛不少。看來你比我想像中更適合這座吃人的城市。你換了身像樣的西裝，總算有點人樣了。' },
+          { speaker: '討債打手「刀疤」', left: 'assets/11_char_protagonist_3.png', right: 'assets/12_char_scar_1.png', text: '下一期是 Day 6 晚上，金額 $50,000。龍哥讓你明天去「金絲雀夜總會」外圍試試水溫——那裡的荷官，可沒那麼好對付。' }
+        ],
+        action: () => {
+          State.day = 5;
+          Game.updateHUD();
+          VN.loadScene('ch1_day5_vivian');
+        }
+      },
+      ch1_day5_vivian: {
+        bg: 'assets/05_bg_casino_2_club.jpg',
+        phase: '第一章高潮：來自荷官的警告',
+        lines: [
+          { speaker: '系統旁白', left: 'assets/11_char_protagonist_3.png', right: '', text: 'Day 5 夜晚。你提前來到「金絲雀夜總會」外圍酒吧踩點，紫紅色的霓虹燈映照在黑曜石吧檯上。' },
+          { speaker: '女荷官「薇薇安」', left: 'assets/11_char_protagonist_3.png', right: 'assets/17_char_vivian_1.png', text: '你就是最近在鐵鏽俱樂部橫掃全場的陳先生？我是「金絲雀」的首席荷官薇薇安。' },
+          { speaker: '女荷官「薇薇安」', left: 'assets/11_char_protagonist_3.png', right: 'assets/19_char_vivian_3.png', text: '明晚你就要正式進場了，但我勸你一句——別在我的牌桌上用阿鬼賣給你的那些小把戲。' },
+          { speaker: '主角', left: 'assets/10_char_protagonist_2.png', right: 'assets/19_char_vivian_3.png', text: '妳怎麼知道阿鬼？妳是龍哥的人？' },
+          { speaker: '女荷官「薇薇安」', left: 'assets/10_char_protagonist_2.png', right: 'assets/18_char_vivian_2.png', text: '在這裡，每個人都是龍哥的棋子……包括捲走你 800 萬的那位前合夥人「馬克」。他上週才在我們 VIP 室輸光了兩百萬，卻一點都不心疼——你想想，他的錢是哪來的？' }
+        ],
+        choices: [
+          {
+            label: '「如果妳願意幫我，贏的錢我分妳三成。」（開啟薇薇安同盟線）',
+            effect: () => { State.flags.vivian_ally = true; },
+            next: 'ch1_day5_ally'
+          },
+          {
+            label: '「我誰都不信，這場牌局我自己能贏。」（獨狼路線：專注力上限+20）',
+            effect: () => { State.focus += 20; State.san = Math.max(0, State.san - 10); },
+            next: 'ch1_day5_solo'
+          }
+        ]
+      },
+      ch1_day5_ally: {
+        bg: 'assets/05_bg_casino_2_club.jpg',
+        lines: [
+          { speaker: '女荷官「薇薇安」', left: 'assets/11_char_protagonist_3.png', right: 'assets/20_char_vivian_4.png', text: '我不要錢，我要龍哥保險櫃裡的一份名單。明天牌桌上，我會用發牌的節奏暗示你對手的底牌強度，別讓我失望。' }
+        ],
+        action: () => Game.triggerEnding('ch1_clear')
+      },
+      ch1_day5_solo: {
+        bg: 'assets/05_bg_casino_2_club.jpg',
+        lines: [
+          { speaker: '女荷官「薇薇安」', left: 'assets/11_char_protagonist_3.png', right: 'assets/17_char_vivian_1.png', text: '隨便你。祝你好運，陳先生，希望明晚之後我還能看到你活著走出去。' }
+        ],
+        action: () => Game.triggerEnding('ch1_clear')
+      }
+    };
+
+    // ==========================================
+    // 3. 視覺小說控制器 (VN Controller)
+    // ==========================================
+    const VN = {
+      scene: null,
+      index: 0,
+      loadScene(sceneId) {
+        Game.showScreen('screen-vn');
+        this.scene = SCRIPTS[sceneId];
+        this.index = 0;
+        if (this.scene.bg) {
+          document.getElementById('bg-layer').style.backgroundImage = `url('${this.scene.bg}')`;
+        }
+        if (this.scene.phase) {
+          document.getElementById('hud-phase').innerText = this.scene.phase;
+        }
+        document.getElementById('vn-choices').classList.add('hidden');
+        this.renderLine();
+      },
+      renderLine() {
+        const line = this.scene.lines[this.index];
+        document.getElementById('vn-speaker').innerText = line.speaker;
+        document.getElementById('vn-text').innerText = line.text;
+
+        const leftImg = document.getElementById('vn-sprite-left');
+        const rightImg = document.getElementById('vn-sprite-right');
+
+        if (line.left) {
+          leftImg.src = line.left;
+          leftImg.style.display = 'block';
+          leftImg.classList.remove('hidden');
+        } else {
+          leftImg.classList.add('hidden');
+        }
+
+        if (line.right) {
+          rightImg.src = line.right;
+          rightImg.style.display = 'block';
+          rightImg.classList.remove('hidden');
+        } else {
+          rightImg.classList.add('hidden');
+        }
+      },
+      next() {
+        if (!document.getElementById('vn-choices').classList.contains('hidden')) return;
+        this.index++;
+        if (this.index < this.scene.lines.length) {
+          this.renderLine();
+        } else if (this.scene.choices) {
+          this.showChoices();
+        } else if (this.scene.action) {
+          this.scene.action();
+        }
+      },
+      showChoices() {
+        const list = document.getElementById('vn-choices-list');
+        list.innerHTML = '';
+        this.scene.choices.forEach(c => {
+          const btn = document.createElement('button');
+          btn.className = 'w-full p-4 bg-zinc-900 hover:bg-pink-950/80 border border-zinc-700 hover:border-pink-500 rounded-xl text-left text-white font-bold transition shadow-lg';
+          btn.innerText = c.label;
+          btn.onclick = () => {
+            if (c.effect) c.effect();
+            Game.updateHUD();
+            VN.loadScene(c.next);
+          };
+          list.appendChild(btn);
+        });
+        document.getElementById('vn-choices').classList.remove('hidden');
+      }
+    };
+
+    // ==========================================
+    // 4. 白天行動樞紐控制器 (Day Hub)
+    // ==========================================
+    const Hub = {
+      open() {
+        Game.showScreen('screen-hub');
+        document.getElementById('bg-layer').style.backgroundImage = `url('assets/02_bg_apartment_slum.jpg')`;
+        document.getElementById('hub-title').innerText = `Day ${State.day} 清晨 — 破舊出租套房`;
+        this.updateInventoryUI();
+      },
+      updateInventoryUI() {
+        const items = [];
+        if (State.inventory.eyedrops > 0) items.push(`透視眼藥水 x${State.inventory.eyedrops}`);
+        if (State.inventory.marked_deck > 0) items.push(`藥水標記牌 x${State.inventory.marked_deck}`);
+        document.getElementById('hub-inventory').innerText = items.length ? items.join('、') : '無';
+      },
+      buyItem(type, cost) {
+        if (State.money < cost) {
+          alert('你的資金不足以購買此道具！');
+          return;
+        }
+        State.money -= cost;
+        State.inventory[type]++;
+        Game.updateHUD();
+        this.updateInventoryUI();
+        document.getElementById('bg-layer').style.backgroundImage = `url('assets/03_bg_alley_shop.jpg')`;
+      },
+      doAction(type) {
+        if (type === 'rest') {
+          State.san = Math.max(0, State.san - 20);
+          State.focus += 25;
+          State.suspicion = Math.max(0, State.suspicion - 15);
+        } else if (type === 'work') {
+          State.money += 3000;
+          State.san += 10;
+        }
+        Game.updateHUD();
+        this.goNightPoker();
+      },
+      goNightPoker() {
+        document.getElementById('bg-layer').style.backgroundImage = `url('assets/01_bg_casino_1_dock.jpg')`;
+        // 隨機抽取第一章鐵鏽俱樂部對手
+        const opponents = [
+          {
+            name: '暴發戶「肥仔強」',
+            style: '跟注站 / 容易上頭',
+            chips: 18000,
+            avatarNormal: 'assets/22_npc_gambler_2_normal.png',
+            avatarBluff: 'assets/23_npc_gambler_2_sweat.png'
+          },
+          {
+            name: '醉醺醺的上班族',
+            style: '鬆兇型 / 亂推All-in',
+            chips: 12000,
+            avatarNormal: 'assets/21_npc_gambler_1.png',
+            avatarBluff: 'assets/21_npc_gambler_1.png'
+          },
+          {
+            name: '冷面職業牌手',
+            style: '緊兇型 / 精於算牌',
+            chips: 22000,
+            avatarNormal: 'assets/24_npc_gambler_3.png',
+            avatarBluff: 'assets/24_npc_gambler_3.png'
+          }
+        ];
+        const opp = opponents[Math.floor(Math.random() * opponents.length)];
+
+        Poker.startMatch({
+          venue: '鐵鏽俱樂部 ($50 / $100)',
+          blinds: [50, 100],
+          maxHands: 6,
+          isTutorial: false,
+          opponent: opp,
+          onWin: () => {
+            if (State.day === 2) {
+              State.day = 3;
+              Game.updateHUD();
+              Hub.open();
+            } else {
+              VN.loadScene('ch1_day3_deadline');
+            }
+          },
+          onLose: () => {
+            if (State.money <= 0) {
+              Game.triggerEnding('bad_sea');
+            } else if (State.day === 2) {
+              State.day = 3;
+              Hub.open();
+            } else {
+              VN.loadScene('ch1_day3_deadline');
+            }
+          }
+        });
+      }
+    };
+
+    // ==========================================
+    // 5. 德州撲克核心演算法與牌桌引擎 (Texas Hold'em Engine)
+    // ==========================================
+    const Poker = {
+      config: null,
+      deck: [],
+      playerCards: [],
+      oppCards: [],
+      communityCards: [],
+      pot: 0,
+      playerChips: 0,
+      oppChips: 0,
+      currentBet: 0,
+      stage: 'preflop', // preflop, flop, turn, river, showdown
+      handNum: 0,
+      revealOppCard: false,
+
+      startMatch(cfg) {
+        this.config = cfg;
+        this.handNum = 0;
+        this.playerChips = State.money;
+        this.oppChips = cfg.opponent.chips;
+
+        Game.showScreen('screen-poker');
+        document.getElementById('pk-venue').innerText = cfg.venue;
+        document.getElementById('pk-blinds').innerText = `$${cfg.blinds[0]} / $${cfg.blinds[1]}`;
+        document.getElementById('pk-opp-name').innerText = cfg.opponent.name;
+        document.getElementById('pk-opp-style').innerText = cfg.opponent.style;
+        document.getElementById('pk-opp-avatar').src = cfg.opponent.avatarNormal;
+
+        this.startNextHand();
+      },
+
+      createDeck() {
+        const suits = ['♠', '♥', '♦', '♣'];
+        const deck = [];
+        for (let s of suits) {
+          for (let v = 2; v <= 14; v++) {
+            deck.push({ suit: s, value: v });
+          }
+        }
+        for (let i = deck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        return deck;
+      },
+
+      startNextHand() {
+        if (this.playerChips <= 0 || this.oppChips <= 0 || this.handNum >= this.config.maxHands) {
+          this.finishNightSession();
+          return;
+        }
+
+        this.handNum++;
+        this.revealOppCard = false;
+        this.stage = 'preflop';
+        this.communityCards = [];
+        this.deck = this.createDeck();
+        document.getElementById('pk-opp-avatar').src = this.config.opponent.avatarNormal;
+
+        // 教學腳本固定發牌（確保序章戲劇張力）
+        if (this.config.isTutorial && this.handNum === 1) {
+          this.playerCards = [{ suit: '♥', value: 14 }, { suit: '♠', value: 13 }]; // AK
+          this.oppCards = [{ suit: '♦', value: 13 }, { suit: '♣', value: 10 }]; // KT
+          document.getElementById('pk-tell-hint').innerText = '【教學提示】你拿到頂級起手牌 AK！積極加注贏取底池。';
+        } else if (this.config.isTutorial && this.handNum === 2) {
+          this.playerCards = [{ suit: '♣', value: 7 }, { suit: '♦', value: 2 }]; // 72o
+          this.oppCards = [{ suit: '♠', value: 9 }, { suit: '♣', value: 8 }]; // 98o 詐唬
+          document.getElementById('pk-tell-hint').innerText = '【讀心提示】注意刀疤的頭像！若他額頭冒汗暴怒，代表他在虛張聲勢（Bluff）！';
+        } else {
+          this.playerCards = [this.deck.pop(), this.deck.pop()];
+          this.oppCards = [this.deck.pop(), this.deck.pop()];
+          document.getElementById('pk-tell-hint').innerText = State.flags.vivian_ally
+            ? '【薇薇安暗號】荷官輕敲桌面——對手起手牌結構偏弱。'
+            : '觀察對手下注節奏與表情變化，尋找破綻...';
+        }
+
+        // 扣除盲注
+        const sb = Math.min(this.playerChips, this.config.blinds[0]);
+        const bb = Math.min(this.oppChips, this.config.blinds[1]);
+        this.playerChips -= sb;
+        this.oppChips -= bb;
+        this.pot = sb + bb;
+        this.currentBet = bb - sb;
+
+        document.getElementById('pk-controls').classList.remove('hidden');
+        document.getElementById('pk-next-wrap').classList.add('hidden');
+        document.getElementById('pk-message').innerText = '翻牌前 (Pre-Flop)：請選擇你的行動';
+        document.getElementById('pk-opp-action').innerText = `下大盲注 $${bb}`;
+
+        this.updateTableUI();
+      },
+
+      useCheat(type) {
+        if (State.inventory[type] <= 0) return;
+        State.inventory[type]--;
+
+        if (type === 'eyedrops') {
+          this.revealOppCard = true;
+          State.suspicion += 20;
+          document.getElementById('pk-message').innerText = '【透視發動】你看穿了對手的一張底牌！';
+        } else if (type === 'marked_deck') {
+          this.playerCards = [{ suit: '♠', value: 14 }, { suit: '♥', value: 14 }];
+          State.suspicion += 30;
+          document.getElementById('pk-message').innerText = '【偷換成功】你的手牌已替換為口袋對 A (AA)！';
+        }
+
+        Game.updateHUD();
+        this.updateTableUI();
+
+        if (State.suspicion >= 100) {
+          alert('警報大作！賭場保鑣抓包了你的出千動作！');
+          Game.triggerEnding('bad_sea');
+        }
+      },
+
+      playerAction(action) {
+        if (action === 'fold') {
+          document.getElementById('pk-message').innerText = '你選擇蓋牌，對手收下底池。';
+          this.oppChips += this.pot;
+          this.endHand();
+          return;
+        }
+
+        let raiseAmt = 0;
+        if (action === 'call') {
+          const pay = Math.min(this.playerChips, this.currentBet);
+          this.playerChips -= pay;
+          this.pot += pay;
+        } else if (action === 'raise') {
+          const target = Math.max(this.config.blinds[1] * 2, this.currentBet * 2);
+          const pay = Math.min(this.playerChips, target);
+          this.playerChips -= pay;
+          this.pot += pay;
+          raiseAmt = pay;
+        } else if (action === 'allin') {
+          const pay = this.playerChips;
+          this.playerChips = 0;
+          this.pot += pay;
+          raiseAmt = pay;
+        }
+
+        // 對手 AI 回應
+        this.aiRespond(action, raiseAmt);
+      },
+
+      aiRespond(playerAct, raiseAmt) {
+        const oppEval = this.evaluate7Cards([...this.oppCards, ...this.communityCards]);
+        const isBluffing = (this.config.isTutorial && this.handNum === 2) || (Math.random() < 0.25);
+
+        if (isBluffing) {
+          document.getElementById('pk-opp-avatar').src = this.config.opponent.avatarBluff;
+        }
+
+        // 若玩家 All-in 且對手牌力極差又沒在硬演，對手蓋牌
+        if (playerAct === 'allin' && oppEval.score < 200 && !isBluffing && !this.config.isTutorial) {
+          document.getElementById('pk-opp-action').innerText = '皺眉蓋牌 (Fold)';
+          document.getElementById('pk-message').innerText = `對手被你的氣勢逼退！你贏得 $${this.pot}！`;
+          this.playerChips += this.pot;
+          this.endHand();
+          return;
+        }
+
+        // 對手跟注
+        const callAmt = Math.min(this.oppChips, raiseAmt);
+        this.oppChips -= callAmt;
+        this.pot += callAmt;
+        document.getElementById('pk-opp-action').innerText = isBluffing ? '額頭冒汗，強裝鎮定跟注！' : `冷靜跟注 $${callAmt}`;
+
+        // 推進發牌階段
+        if (this.playerChips === 0 || this.oppChips === 0) {
+          // 有人 All-in，直接發完剩餘公共牌進入攤牌
+          while (this.communityCards.length < 5) {
+            this.dealNextCommunity();
+          }
+          this.showdown();
+          return;
+        }
+
+        if (this.stage === 'preflop') {
+          this.stage = 'flop';
+          this.dealNextCommunity(3);
+          document.getElementById('pk-message').innerText = '翻牌圈 (Flop)：開出 3 張公共牌';
+        } else if (this.stage === 'flop') {
+          this.stage = 'turn';
+          this.dealNextCommunity(1);
+          document.getElementById('pk-message').innerText = '轉牌圈 (Turn)：開出第 4 張公共牌';
+        } else if (this.stage === 'turn') {
+          this.stage = 'river';
+          this.dealNextCommunity(1);
+          document.getElementById('pk-message').innerText = '河牌圈 (River)：最後決戰時刻！';
+        } else {
+          this.showdown();
+          return;
+        }
+
+        this.currentBet = 0;
+        this.updateTableUI();
+      },
+
+      dealNextCommunity(count = 1) {
+        if (this.config.isTutorial && this.handNum === 1 && this.communityCards.length === 0) {
+          this.communityCards.push({ suit: '♥', value: 13 }, { suit: '♦', value: 7 }, { suit: '♣', value: 2 });
+          return;
+        }
+        if (this.config.isTutorial && this.handNum === 2 && this.communityCards.length === 0) {
+          this.communityCards.push({ suit: '♠', value: 14 }, { suit: '♥', value: 14 }, { suit: '♠', value: 13 });
+          return;
+        }
+        for (let i = 0; i < count; i++) {
+          if (this.communityCards.length < 5) {
+            this.communityCards.push(this.deck.pop());
+          }
+        }
+      },
+
+      showdown() {
+        this.stage = 'showdown';
+        const pRes = this.evaluate7Cards([...this.playerCards, ...this.communityCards]);
+        const oRes = this.evaluate7Cards([...this.oppCards, ...this.communityCards]);
+
+        let resultMsg = '';
+        if (pRes.score > oRes.score) {
+          this.playerChips += this.pot;
+          resultMsg = `【你贏了！】你的「${pRes.name}」擊敗對手的「${oRes.name}」，贏得 $${this.pot}！`;
+        } else if (pRes.score < oRes.score) {
+          this.oppChips += this.pot;
+          resultMsg = `【你輸了】對手的「${oRes.name}」擊敗了你的「${pRes.name}」。`;
+        } else {
+          const half = Math.floor(this.pot / 2);
+          this.playerChips += half;
+          this.oppChips += (this.pot - half);
+          resultMsg = `【平手分池】雙方皆為「${pRes.name}」，平分底池。`;
+        }
+
+        document.getElementById('pk-message').innerText = resultMsg;
+        this.endHand();
+      },
+
+      endHand() {
+        State.money = this.playerChips;
+        Game.updateHUD();
+        this.updateTableUI();
+
+        document.getElementById('pk-controls').classList.add('hidden');
+        document.getElementById('pk-next-wrap').classList.remove('hidden');
+
+        if (this.playerChips <= 0 || this.oppChips <= 0 || this.handNum >= this.config.maxHands) {
+          document.getElementById('btn-next-hand').classList.add('hidden');
+        } else {
+          document.getElementById('btn-next-hand').classList.remove('hidden');
+        }
+      },
+
+      finishNightSession() {
+        State.money = this.playerChips;
+        Game.updateHUD();
+        if (this.playerChips <= 0) {
+          this.config.onLose();
+        } else {
+          this.config.onWin();
+        }
+      },
+
+      // 渲染單張撲克牌 HTML
+      renderCardHTML(card, hidden = false) {
+        if (hidden) {
+          return `<div class="w-14 h-20 md:w-16 md:h-24 rounded-lg border-2 border-amber-500/50 bg-red-950 card-shadow overflow-hidden flex items-center justify-center">
+            <img src="assets/07_card_back.png" class="w-full h-full object-cover" onerror="this.style.display='none'" />
+          </div>`;
+        }
+        const isRed = card.suit === '♥' || card.suit === '♦';
+        const valMap = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
+        const label = valMap[card.value] || card.value;
+        return `<div class="w-14 h-20 md:w-16 md:h-24 rounded-lg bg-zinc-100 border border-zinc-300 card-shadow flex flex-col justify-between p-1.5 ${isRed ? 'text-red-600' : 'text-zinc-900'}">
+          <div class="text-xs md:text-sm font-black leading-none">${label}${card.suit}</div>
+          <div class="text-xl md:text-2xl self-center">${card.suit}</div>
+          <div class="text-xs md:text-sm font-black leading-none self-end rotate-180">${label}${card.suit}</div>
+        </div>`;
+      },
+
+      updateTableUI() {
+        document.getElementById('pk-hand-count').innerText = `${this.handNum} / ${this.config.maxHands}`;
+        document.getElementById('pk-pot').innerText = `$${this.pot.toLocaleString()}`;
+        document.getElementById('pk-player-chips').innerText = `$${this.playerChips.toLocaleString()}`;
+        document.getElementById('pk-opp-chips').innerText = `$${this.oppChips.toLocaleString()}`;
+
+        document.getElementById('count-eyedrops').innerText = State.inventory.eyedrops;
+        document.getElementById('count-marked').innerText = State.inventory.marked_deck;
+        document.getElementById('btn-cheat-eyedrops').disabled = State.inventory.eyedrops <= 0 || this.stage === 'showdown';
+        document.getElementById('btn-cheat-marked').disabled = State.inventory.marked_deck <= 0 || this.stage === 'showdown';
+
+        // 渲染玩家手牌
+        document.getElementById('pk-player-cards').innerHTML = this.playerCards.map(c => this.renderCardHTML(c, false)).join('');
+
+        // 渲染對手手牌（攤牌全開，透視開第1張）
+        document.getElementById('pk-opp-cards').innerHTML = this.oppCards.map((c, idx) => {
+          const isOpen = this.stage === 'showdown' || (this.revealOppCard && idx === 0);
+          return this.renderCardHTML(c, !isOpen);
+        }).join('');
+
+        // 渲染公共牌
+        let commHTML = '';
+        for (let i = 0; i < 5; i++) {
+          if (this.communityCards[i]) {
+            commHTML += this.renderCardHTML(this.communityCards[i], false);
+          } else {
+            commHTML += `<div class="w-14 h-20 md:w-16 md:h-24 rounded-lg border border-dashed border-emerald-400/30 bg-emerald-950/30"></div>`;
+          }
+        }
+        document.getElementById('pk-community-cards').innerHTML = commHTML;
+
+        // 即時計算玩家當前牌型
+        const currentEval = this.evaluate7Cards([...this.playerCards, ...this.communityCards]);
+        document.getElementById('pk-player-rank').innerText = `當前牌型：${currentEval.name}`;
+      },
+
+      // ==========================================
+      // 德州撲克 7 選 5 牌型評估演算法
+      // ==========================================
+      evaluate7Cards(cards) {
+        if (cards.length < 5) {
+          // 翻牌前僅評估2張手牌
+          const v1 = cards[0].value, v2 = cards[1].value;
+          if (v1 === v2) return { score: 100 + v1, name: '口袋對子' };
+          return { score: Math.max(v1, v2), name: '高牌' };
+        }
+
+        // 產生所有 C(n, 5) 組合取最高分
+        let best = { score: 0, name: '高牌' };
+        const n = cards.length;
+        for (let i = 0; i < n - 4; i++) {
+          for (let j = i + 1; j < n - 3; j++) {
+            for (let k = j + 1; k < n - 2; k++) {
+              for (let l = k + 1; l < n - 1; l++) {
+                for (let m = l + 1; m < n; m++) {
+                  const res = this.evaluate5Cards([cards[i], cards[j], cards[k], cards[l], cards[m]]);
+                  if (res.score > best.score) best = res;
+                }
+              }
+            }
+          }
+        }
+        return best;
+      },
+
+      evaluate5Cards(hand) {
+        const sorted = [...hand].sort((a, b) => b.value - a.value);
+        const vals = sorted.map(c => c.value);
+        const suits = sorted.map(c => c.suit);
+
+        const isFlush = suits.every(s => s === suits[0]);
+        let isStraight = false;
+        let straightHigh = vals[0];
+
+        // 一般順子檢查
+        if (vals[0] - vals[1] === 1 && vals[1] - vals[2] === 1 && vals[2] - vals[3] === 1 && vals[3] - vals[4] === 1) {
+          isStraight = true;
+        }
+        // A-2-3-4-5 最小順子
+        if (vals[0] === 14 && vals[1] === 5 && vals[2] === 4 && vals[3] === 3 && vals[4] === 2) {
+          isStraight = true;
+          straightHigh = 5;
+        }
+
+        const counts = {};
+        vals.forEach(v => counts[v] = (counts[v] || 0) + 1);
+        const groups = Object.entries(counts)
+          .map(([v, c]) => ({ val: Number(v), count: c }))
+          .sort((a, b) => b.count - a.count || b.val - a.val);
+
+        const kickerScore = vals[0] * 0.01 + vals[1] * 0.0001;
+
+        if (isFlush && isStraight) return { score: 800 + straightHigh, name: straightHigh === 14 ? '皇家同花順' : '同花順' };
+        if (groups[0].count === 4) return { score: 700 + groups[0].val, name: '四條 (鐵支)' };
+        if (groups[0].count === 3 && groups[1].count === 2) return { score: 600 + groups[0].val, name: '葫蘆 (Full House)' };
+        if (isFlush) return { score: 500 + kickerScore * 100, name: '同花' };
+        if (isStraight) return { score: 400 + straightHigh, name: '順子' };
+        if (groups[0].count === 3) return { score: 300 + groups[0].val + kickerScore, name: '三條' };
+        if (groups[0].count === 2 && groups[1].count === 2) return { score: 200 + groups[0].val * 2 + groups[1].val * 0.1, name: '兩對' };
+        if (groups[0].count === 2) return { score: 100 + groups[0].val + kickerScore, name: '一對' };
+        return { score: vals[0] + kickerScore, name: '高牌' };
+      }
+    };
+
+    // ==========================================
+    // 6. 遊戲主控與存檔系統 (Game Manager)
+    // ==========================================
+    const Game = {
+      init() {
+        if (localStorage.getItem('kowloon_poker_save')) {
+          document.getElementById('btn-load').classList.remove('hidden');
+        }
+        this.updateHUD();
+      },
+      showScreen(id) {
+        ['screen-title', 'screen-vn', 'screen-hub', 'screen-poker', 'screen-ending'].forEach(s => {
+          document.getElementById(s).classList.add('hidden');
+        });
+        document.getElementById(id).classList.remove('hidden');
+      },
+      updateHUD() {
+        document.getElementById('hud-day').innerText = State.day;
+        document.getElementById('hud-money').innerText = `$${State.money.toLocaleString()}`;
+        document.getElementById('hud-debt').innerText = State.day <= 3 ? '$20,000 (Day 3)' : '$50,000 (Day 6)';
+        document.getElementById('hud-san').innerText = State.san;
+        document.getElementById('hud-san-bar').style.width = `${Math.min(100, State.san)}%`;
+        document.getElementById('hud-focus').innerText = State.focus;
+        document.getElementById('hud-suspicion').innerText = `${State.suspicion}%`;
+        document.getElementById('hud-suspicion-bar').style.width = `${Math.min(100, State.suspicion)}%`;
+      },
+      startNewGame() {
+        this.updateHUD();
+        VN.loadScene('prologue_start');
+      },
+      saveGame() {
+        localStorage.setItem('kowloon_poker_save', JSON.stringify(State));
+        alert('遊戲進度已儲存至瀏覽器！');
+      },
+      loadGame() {
+        const saved = localStorage.getItem('kowloon_poker_save');
+        if (!saved) return;
+        Object.assign(State, JSON.parse(saved));
+        this.updateHUD();
+        Hub.open();
+      },
+      triggerEnding(type) {
+        this.showScreen('screen-ending');
+        const cg = document.getElementById('end-cg');
+        if (type === 'bad_sea') {
+          cg.src = 'assets/08_cg_ending_bad_sea.jpg';
+          cg.classList.remove('hidden');
+          document.getElementById('end-tag').innerText = 'BAD ENDING 1';
+          document.getElementById('end-title').innerText = '沉入九龍灣';
+          document.getElementById('end-desc').innerText = '你沒能籌齊還款金額（或出千被當場抓包）。冰冷的海水灌入肺部，九龍灣的霓虹燈在海面上扭曲碎裂，成為你最後的記憶……';
+        } else if (type === 'ch1_clear') {
+          cg.src = 'assets/05_bg_casino_2_club.jpg';
+          cg.classList.remove('hidden');
+          document.getElementById('end-tag').innerText = 'CHAPTER 1 COMPLETE';
+          document.getElementById('end-title').innerText = '第一章通關：踏入霓虹迷局';
+          document.getElementById('end-desc').innerText = `你成功在地下黑市與鐵鏽俱樂部殺出一條血路，並帶著 $${State.money.toLocaleString()} 的資金與關鍵線索，準備踏入第二章「金絲雀夜總會」與前合夥人馬克正面對決！`;
+        }
+      }
+    };
+
+    window.onload = () => Game.init();
+  </script>
+</body>
+</html>
